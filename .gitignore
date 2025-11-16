@@ -1,0 +1,37 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
+
+# Flask / SQLAlchemy
+instance/
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+
+# pytest / coverage
+htmlcov/
+.coverage
+.cache
+
+# Backup files
+*.swp
+*.swo
