@@ -1,2 +1,6 @@
 # HMS-MAD-Projectv1
-This is based upon the Mad1 Project of the Hospital Management System (HMS)
+
+# HMS Project (MAD)
+
+Milestone 0 completed: Repository initialized.
+
