@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Appointments</title>
+</head>
+<body>
+
+<h2>Upcoming Appointments</h2>
+
+{% if upcoming %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Doctor ID</th>
+        <th>Patient ID</th>
+    </tr>
+
+    {% for a in upcoming %}
+    <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time }}</td>
+        <td>{{ a.doctor_id }}</td>
+        <td>{{ a.patient_id }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No upcoming appointments.</p>
+{% endif %}
+
+<hr>
+
+<h2>Past Appointments</h2>
+
+{% if past %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Doctor ID</th>
+        <th>Patient ID</th>
+    </tr>
+
+    {% for a in past %}
+    <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time }}</td>
+        <td>{{ a.doctor_id }}</td>
+        <td>{{ a.patient_id }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No past appointments.</p>
+{% endif %}
+
+</body>
+</html>

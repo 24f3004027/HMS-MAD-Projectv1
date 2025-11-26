@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Patients</title>
+</head>
+<body>
+
+<h2>Search Patients</h2>
+
+<form method="POST">
+    <label>Search (Name, ID, Contact, or Gender):</label><br>
+    <input type="text" name="query" required>
+    <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<h3>Results:</h3>
+
+{% if patients %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Contact</th>
+        <th>Action</th>
+    </tr>
+
+    {% for p in patients %}
+    <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.age }}</td>
+        <td>{{ p.gender }}</td>
+        <td>{{ p.contact }}</td>
+        <td>
+            <a href="/admin/blacklist_patient/{{ p.id }}">Blacklist</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No results found.</p>
+{% endif %}
+
+</body>
+</html>

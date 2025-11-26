@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Doctor</title>
+</head>
+<body>
+
+<h2>Edit Doctor</h2>
+
+<form method="POST">
+
+    <label>Name:</label><br>
+    <input type="text" name="name" value="{{ doctor.name }}" required><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" name="email" value="{{ doctor.email }}" required><br><br>
+
+    <label>Department ID:</label><br>
+    <input type="number" name="department_id" value="{{ doctor.department_id }}" required><br><br>
+
+    <button type="submit">Save Changes</button>
+
+</form>
+
+</body>
+</html>

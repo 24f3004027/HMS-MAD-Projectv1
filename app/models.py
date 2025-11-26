@@ -1,6 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from . import db   # <-- Import the db from __init__.py
 
 # -----------------------------
 # 1. ADMIN (Predefined)
@@ -31,8 +29,11 @@ class Doctor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
     department_id = db.Column(db.Integer, db.ForeignKey("departments.id"), nullable=False)
+
+    is_active = db.Column(db.Boolean, default=True)
 
     appointments = db.relationship("Appointment", backref="doctor", lazy=True)
 
@@ -46,6 +47,9 @@ class Patient(db.Model):
     name = db.Column(db.String(150), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
+    contact = db.Column(db.String(20), nullable=False)
+
+    is_active = db.Column(db.Boolean, default=True)
 
     appointments = db.relationship("Appointment", backref="patient", lazy=True)
 

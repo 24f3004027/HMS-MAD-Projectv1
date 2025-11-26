@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Doctors</title>
+</head>
+<body>
+
+<h2>Search Doctors</h2>
+
+<form method="POST">
+    <label>Search (Name or Specialization):</label><br>
+    <input type="text" name="query" required>
+    <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<h3>Results:</h3>
+
+{% if doctors %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Department ID</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for d in doctors %}
+    <tr>
+        <td>{{ d.id }}</td>
+        <td>{{ d.name }}</td>
+        <td>{{ d.department_id }}</td>
+        <td><a href="/admin/update_doctor/{{ d.id }}">Edit</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No results found.</p>
+{% endif %}
+
+</body>
+</html>
