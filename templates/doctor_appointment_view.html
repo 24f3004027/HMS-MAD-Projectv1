@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment Details</title>
+</head>
+<body>
+
+<h2>Appointment Details</h2>
+
+<p><b>Appointment ID:</b> {{ appt.id }}</p>
+<p><b>Date:</b> {{ appt.date }}</p>
+<p><b>Time:</b> {{ appt.time }}</p>
+
+<h3>Patient Info</h3>
+<p><b>Name:</b> {{ appt.patient.name }}</p>
+<p><b>Age:</b> {{ appt.patient.age }}</p>
+<p><b>Gender:</b> {{ appt.patient.gender }}</p>
+<p><b>Contact:</b> {{ appt.patient.contact }}</p>
+
+<hr>
+
+<h3>Past Medical History</h3>
+
+{% if history %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Date</th>
+        <th>Diagnosis</th>
+        <th>Treatment Notes</th>
+        <th>Prescription</th>
+    </tr>
+
+    {% for h in history %}
+    <tr>
+        <td>{{ h.date }}</td>
+        <td>{{ h.diagnosis or '-' }}</td>
+        <td>{{ h.treatment_notes or '-' }}</td>
+        <td>{{ h.prescription or '-' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No previous history for this patient.</p>
+{% endif %}
+

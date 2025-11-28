@@ -1,4 +1,5 @@
-from . import db   # <-- Import the db from __init__.py
+from . import db
+from datetime import datetime
 
 # -----------------------------
 # 1. ADMIN (Predefined)
@@ -9,6 +10,7 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+
 
 # -----------------------------
 # 2. DEPARTMENT / SPECIALIZATION
@@ -21,6 +23,7 @@ class Department(db.Model):
 
     doctors = db.relationship("Doctor", backref="department", lazy=True)
 
+
 # -----------------------------
 # 3. DOCTOR
 # -----------------------------
@@ -29,13 +32,16 @@ class Doctor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+
     department_id = db.Column(db.Integer, db.ForeignKey("departments.id"), nullable=False)
 
     is_active = db.Column(db.Boolean, default=True)
 
     appointments = db.relationship("Appointment", backref="doctor", lazy=True)
+
 
 # -----------------------------
 # 4. PATIENT
@@ -47,7 +53,7 @@ class Patient(db.Model):
     name = db.Column(db.String(150), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
-    contact = db.Column(db.String(20), nullable=False)
+    contact = db.Column(db.String(20), nullable=True)
 
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
@@ -56,9 +62,9 @@ class Patient(db.Model):
 
     appointments = db.relationship("Appointment", backref="patient", lazy=True)
 
+
 # -----------------------------
 # 5. APPOINTMENT
-# Doctor–Patient many-to-many relationship
 # -----------------------------
 class Appointment(db.Model):
     __tablename__ = "appointments"
@@ -70,11 +76,19 @@ class Appointment(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"), nullable=False)
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"), nullable=False)
 
+    # --- New fields for this milestone ---
+    status = db.Column(db.String(20), default="Booked")   # Booked / Completed / Cancelled
+    diagnosis = db.Column(db.Text, nullable=True)
+    treatment_notes = db.Column(db.Text, nullable=True)
+    prescription = db.Column(db.Text, nullable=True)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
     treatments = db.relationship("Treatment", backref="appointment", lazy=True)
 
+
 # -----------------------------
-# 6. TREATMENT
-# Linked to Appointment
+# 6. TREATMENT 
 # -----------------------------
 class Treatment(db.Model):
     __tablename__ = "treatments"
@@ -85,3 +99,16 @@ class Treatment(db.Model):
     cost = db.Column(db.Float)
 
     appointment_id = db.Column(db.Integer, db.ForeignKey("appointments.id"), nullable=False)
+
+# -----------------------------
+# 7. AVAILABILITY 
+# -----------------------------
+class Availability(db.Model):
+    __tablename__ = "availability"
+
+    id = db.Column(db.Integer, primary_key=True)
+    doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    is_available = db.Column(db.Boolean, default=True)
+
+    doctor = db.relationship("Doctor", backref="availability")

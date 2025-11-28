@@ -5,12 +5,90 @@
 </head>
 <body>
 
-<h2>Welcome Dr. {{ doctor.name }}!</h2>
+<h2>Welcome, Dr. {{ session['doctor_name'] }}!</h2>
+<p>Your ID: {{ session['doctor_id'] }}</p>
 
-<p>Your ID: {{ doctor.id }}</p>
-<p>Department ID: {{ doctor.department_id }}</p>
+<hr>
+
+<h3>Today's Appointments</h3>
+{% if todays %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Patient</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for a in todays %}
+    <tr>
+        <td>{{ a.patient.name }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time }}</td>
+        <td>{{ a.status }}</td>
+        <td><a href="/doctor/appointment/{{ a.id }}">View</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No appointments for today.</p>
+{% endif %}
+
+<hr>
+
+<h3>Upcoming (Next 7 Days)</h3>
+{% if upcoming %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Patient</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for a in upcoming %}
+    <tr>
+        <td>{{ a.patient.name }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time }}</td>
+        <td>{{ a.status }}</td>
+        <td><a href="/doctor/appointment/{{ a.id }}">View</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No upcoming appointments.</p>
+{% endif %}
+
+<hr>
+
+<h3>Past Appointments</h3>
+{% if past %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Patient</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for a in past %}
+    <tr>
+        <td>{{ a.patient.name }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time }}</td>
+        <td>{{ a.status }}</td>
+        <td><a href="/doctor/appointment/{{ a.id }}">View</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No past appointments.</p>
+{% endif %}
 
 <br>
+<a href="/doctor/availability">Update Availability</a>
+
 <a href="/logout">Logout</a>
 
 </body>

@@ -24,11 +24,12 @@
         <td>{{ d.department_id }}</td>
         <td>
             <a href="/admin/update_doctor/{{ d.id }}">Edit</a> |
-            <a href="/admin/blacklist_doctor/{{ d.id }}">Blacklist</a>
+            <a href="/admin/blacklist_doctor/{{ d.id }}">Blacklist</a> |
+            <a href="/admin/doctor_credentials/{{ d.id }}">Credentials</a>
         </td>
-
     </tr>
-    {% endfor %}
+{% endfor %}
+
 </table>
 
 </body>

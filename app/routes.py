@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Doctor, Patient, Appointment, Department, Admin, db
-from datetime import date
+from .models import Doctor, Patient, Appointment, Department, Admin, Availability, db
+from datetime import date, datetime, timedelta
 
 routes = Blueprint("routes", __name__)
 
@@ -89,6 +89,7 @@ def doctor_login():
 
         if doctor and check_password_hash(doctor.password_hash, password):
             session["doctor_id"] = doctor.id
+            session["doctor_name"] = doctor.name
             session["role"] = "doctor"
             return redirect("/doctor/dashboard")
 
@@ -101,9 +102,80 @@ def doctor_dashboard():
     if "doctor_id" not in session:
         return redirect("/doctor/login")
 
-    doctor = Doctor.query.get(session["doctor_id"])
-    return render_template("doctor_dashboard.html", doctor=doctor)
+    doctor_id = session["doctor_id"]
+    today = date.today()
 
+    todays = Appointment.query.filter_by(doctor_id=doctor_id).filter(
+        Appointment.date == today
+    ).all()
+
+    upcoming = Appointment.query.filter_by(doctor_id=doctor_id).filter(
+        Appointment.date > today
+    ).all()
+
+    past = Appointment.query.filter_by(doctor_id=doctor_id).filter(
+        Appointment.date < today
+    ).all()
+
+    return render_template(
+        "doctor_dashboard.html",
+        todays=todays,
+        upcoming=upcoming,
+        past=past
+    )
+
+
+@routes.route("/doctor/appointment/<int:appt_id>", methods=["GET", "POST"])
+def doctor_view_appointment(appt_id):
+    if "doctor_id" not in session:
+        return redirect("/doctor/login")
+
+    appt = Appointment.query.get_or_404(appt_id)
+
+    # Prevent unauthorized access
+    if appt.doctor_id != session["doctor_id"]:
+        return "Unauthorized access.", 403
+
+    # Handle update submission
+    if request.method == "POST":
+        appt.diagnosis = request.form["diagnosis"]
+        appt.treatment_notes = request.form["treatment_notes"]
+        appt.prescription = request.form["prescription"]
+        appt.status = request.form["status"]
+        db.session.commit()
+        return redirect(f"/doctor/appointment/{appt_id}")
+
+    # Fetch past history (exclude current appointment)
+    history = Appointment.query.filter(
+        Appointment.patient_id == appt.patient_id,
+        Appointment.id != appt.id
+    ).order_by(Appointment.date.desc()).all()
+
+    return render_template(
+        "doctor_appointment_view.html",
+        appt=appt,
+        history=history
+    )
+
+
+@routes.route("/doctor/appointment/update/<int:appt_id>", methods=["POST"])
+def doctor_update_appointment(appt_id):
+    if "doctor_id" not in session:
+        return redirect("/doctor/login")
+
+    appt = Appointment.query.get_or_404(appt_id)
+
+    if appt.doctor_id != session["doctor_id"]:
+        return "Unauthorized access."
+
+    appt.diagnosis = request.form["diagnosis"]
+    appt.treatment_notes = request.form["treatment_notes"]
+    appt.prescription = request.form["prescription"]
+    appt.status = request.form["status"]
+
+    db.session.commit()
+
+    return redirect(f"/doctor/appointment/{appt_id}")
 
 
 # -------------------------
@@ -283,3 +355,43 @@ def blacklist_patient(patient_id):
 def logout():
     session.clear()
     return redirect("/")
+
+@routes.route("/doctor/availability", methods=["GET", "POST"])
+def doctor_availability():
+    if "doctor_id" not in session:
+        return redirect("/doctor/login")
+
+    doctor_id = session["doctor_id"]
+    today = date.today()
+
+    # Get or create availability for next 7 days
+    availability_list = []
+
+    for i in range(7):
+        d = today + timedelta(days=i)
+        avail = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
+        if not avail:
+            avail = Availability(doctor_id=doctor_id, date=d, is_available=True)
+            db.session.add(avail)
+        availability_list.append(avail)
+
+    db.session.commit()
+
+    # If doctor updates the form
+    if request.method == "POST":
+        for a in availability_list:
+            checkbox_name = f"day_{a.id}"
+            a.is_available = checkbox_name in request.form
+        db.session.commit()
+
+        return redirect("/doctor/availability")
+
+    return render_template("doctor_availability.html", availability=availability_list)
+
+@routes.route("/admin/doctor_credentials/<int:doctor_id>")
+def doctor_credentials(doctor_id):
+    if "admin_id" not in session:
+        return redirect("/admin/login")
+
+    doctor = Doctor.query.get_or_404(doctor_id)
+    return render_template("doctor_credentials.html", doctor=doctor)
