@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Appointment</title>
+</head>
+<body>
+
+<h2>Book Appointment with Dr. {{ doctor.name }}</h2>
+<p><b>Department:</b> {{ doctor.department.name }}</p>
+
+<form method="POST">
+    <label>Select Date:</label><br>
+    <select name="date" required>
+        {% for a in avail_data %}
+            {% if a.available %}
+                <option value="{{ a.date }}">{{ a.date }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <label>Select Time:</label><br>
+    <select name="time" required>
+        <option value="09:00:00">09:00 AM</option>
+        <option value="10:00:00">10:00 AM</option>
+        <option value="11:00:00">11:00 AM</option>
+        <option value="15:00:00">03:00 PM</option>
+        <option value="16:00:00">04:00 PM</option>
+    </select>
+    <br><br>
+
+    <button type="submit">Book Appointment</button>
+</form>
+
+<br>
+<a href="/patient/dashboard">Back</a>
+
+</body>
+</html>

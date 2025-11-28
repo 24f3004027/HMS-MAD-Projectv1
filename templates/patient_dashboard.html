@@ -6,10 +6,70 @@
 <body>
 
 <h2>Welcome, {{ patient.name }}!</h2>
+<p><b>Your ID:</b> {{ patient.id }}</p>
+<p><b>Your Contact:</b> {{ patient.contact }}</p>
 
-<p>Your ID: {{ patient.id }}</p>
-<p>Your Contact: {{ patient.contact }}</p>
+<hr>
 
+<h3>Upcoming Appointments</h3>
+{% if upcoming %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for a in upcoming %}
+    <tr>
+        <td>{{ a.doctor.name }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time }}</td>
+        <td>{{ a.status }}</td>
+        <td>
+            <a href="/patient/reschedule/{{ a.id }}">Reschedule</a> |
+            <a href="/patient/cancel/{{ a.id }}">Cancel</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No upcoming appointments.</p>
+{% endif %}
+
+<hr>
+
+<h3>Past Appointments</h3>
+{% if past %}
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+        <th>Status</th>
+    </tr>
+
+    {% for a in past %}
+    <tr>
+        <td>{{ a.doctor.name }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.diagnosis or 'N/A' }}</td>
+        <td>{{ a.prescription or 'N/A' }}</td>
+        <td>{{ a.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No past appointments.</p>
+{% endif %}
+
+<br><br>
+
+<a href="/patient/profile">Update Profile</a> |
+<a href="/patient/search_doctors">Search Doctors</a> |
 <a href="/logout">Logout</a>
 
 </body>

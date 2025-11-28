@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Profile</title>
+</head>
+<body>
+
+<h2>Update Profile</h2>
+
+<form method="POST">
+
+    <label>Name:</label><br>
+    <input type="text" name="name" value="{{ patient.name }}" required><br><br>
+
+    <label>Age:</label><br>
+    <input type="number" name="age" value="{{ patient.age }}" required><br><br>
+
+    <label>Gender:</label><br>
+    <input type="text" name="gender" value="{{ patient.gender }}" required><br><br>
+
+    <label>Contact:</label><br>
+    <input type="text" name="contact" value="{{ patient.contact }}" required><br><br>
+
+    <button type="submit">Save Changes</button>
+</form>
+
+<br>
+<a href="/patient/dashboard">Back</a>
+
+</body>
+</html>

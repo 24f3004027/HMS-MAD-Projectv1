@@ -71,7 +71,23 @@ def patient_dashboard():
         return redirect("/patient/login")
 
     patient = Patient.query.get(session["patient_id"])
-    return render_template("patient_dashboard.html", patient=patient)
+
+    today = date.today()
+
+    upcoming = Appointment.query.filter_by(patient_id=patient.id).filter(
+        Appointment.date >= today
+    ).all()
+
+    past = Appointment.query.filter_by(patient_id=patient.id).filter(
+        Appointment.date < today
+    ).all()
+
+    return render_template(
+        "patient_dashboard.html",
+        patient=patient,
+        upcoming=upcoming,
+        past=past
+    )
 
 
 
@@ -124,7 +140,6 @@ def doctor_dashboard():
         past=past
     )
 
-
 @routes.route("/doctor/appointment/<int:appt_id>", methods=["GET", "POST"])
 def doctor_view_appointment(appt_id):
     if "doctor_id" not in session:
@@ -136,16 +151,18 @@ def doctor_view_appointment(appt_id):
     if appt.doctor_id != session["doctor_id"]:
         return "Unauthorized access.", 403
 
-    # Handle update submission
+    # Handle update
     if request.method == "POST":
         appt.diagnosis = request.form["diagnosis"]
         appt.treatment_notes = request.form["treatment_notes"]
         appt.prescription = request.form["prescription"]
         appt.status = request.form["status"]
+
         db.session.commit()
+
         return redirect(f"/doctor/appointment/{appt_id}")
 
-    # Fetch past history (exclude current appointment)
+    # Fetch patient history EXCEPT current appointment
     history = Appointment.query.filter(
         Appointment.patient_id == appt.patient_id,
         Appointment.id != appt.id
@@ -395,3 +412,170 @@ def doctor_credentials(doctor_id):
 
     doctor = Doctor.query.get_or_404(doctor_id)
     return render_template("doctor_credentials.html", doctor=doctor)
+
+@routes.route("/patient/profile", methods=["GET", "POST"])
+def patient_profile():
+    if "patient_id" not in session:
+        return redirect("/patient/login")
+
+    patient = Patient.query.get(session["patient_id"])
+
+    if request.method == "POST":
+        patient.name = request.form["name"]
+        patient.age = request.form["age"]
+        patient.gender = request.form["gender"]
+        patient.contact = request.form["contact"]
+
+        # Email cannot change (optional rule, safer)
+        # patient.email = request.form["email"]
+
+        db.session.commit()
+        return redirect("/patient/dashboard")
+
+    return render_template("patient_profile.html", patient=patient)
+
+@routes.route("/patient/search_doctors", methods=["GET", "POST"])
+def patient_search_doctors():
+    if "patient_id" not in session:
+        return redirect("/patient/login")
+
+    results = []
+    if request.method == "POST":
+        query = request.form["query"]
+
+        results = Doctor.query.join(Department).filter(
+            Doctor.is_active == True,
+            (
+                Doctor.name.ilike(f"%{query}%") |
+                Department.name.ilike(f"%{query}%")
+            )
+        ).all()
+
+    return render_template("patient_search_doctors.html", doctors=results)
+
+@routes.route("/patient/book/<int:doctor_id>", methods=["GET", "POST"])
+def patient_book(doctor_id):
+    if "patient_id" not in session:
+        return redirect("/patient/login")
+
+    doctor = Doctor.query.get_or_404(doctor_id)
+
+    # next 7 days
+    today = date.today()
+    days = [today + timedelta(days=i) for i in range(1, 8)]
+
+    # load availability for each day
+    avail_data = []
+    for d in days:
+        slot = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
+        avail_data.append({
+            "date": d,
+            "available": slot.is_available if slot else False
+        })
+    
+    if request.method == "POST":
+        selected_date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
+        selected_time = datetime.strptime(request.form["time"], "%H:%M:%S").time()
+
+        # prevent double booking
+        existing = Appointment.query.filter_by(
+            doctor_id=doctor_id,
+            date=selected_date,
+            time=selected_time
+        ).first()
+
+        if existing:
+            return "This slot is already booked."
+
+        appt = Appointment(
+            doctor_id=doctor_id,
+            patient_id=session["patient_id"],
+            date=selected_date,
+            time=selected_time,
+            status="Booked"
+        )
+        db.session.add(appt)
+        db.session.commit()
+
+        return redirect("/patient/dashboard")
+
+
+    return render_template(
+        "patient_book.html",
+        doctor=doctor,
+        avail_data=avail_data
+    )
+
+@routes.route("/patient/cancel/<int:appt_id>")
+def patient_cancel(appt_id):
+    if "patient_id" not in session:
+        return redirect("/patient/login")
+
+    appt = Appointment.query.get_or_404(appt_id)
+
+    # Prevent canceling others’ appointments
+    if appt.patient_id != session["patient_id"]:
+        return "Unauthorized action."
+
+    # Prevent canceling past appointments
+    if appt.date < date.today():
+        return "You cannot cancel past appointments."
+
+    appt.status = "Cancelled"
+    db.session.commit()
+
+    return redirect("/patient/dashboard")
+
+@routes.route("/patient/reschedule/<int:appt_id>", methods=["GET", "POST"])
+def patient_reschedule(appt_id):
+    if "patient_id" not in session:
+        return redirect("/patient/login")
+
+    appt = Appointment.query.get_or_404(appt_id)
+
+    # cannot reschedule past appointments
+    if appt.date < date.today():
+        return "You cannot reschedule past appointments."
+
+    doctor_id = appt.doctor_id
+    today = date.today()
+
+    # next 7 days
+    days = [today + timedelta(days=i) for i in range(1, 8)]
+
+    # load doctor availability
+    avail_data = []
+    for d in days:
+        slot = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
+        avail_data.append({
+            "date": d,
+            "available": slot.is_available if slot else False
+        })
+
+    if request.method == "POST":
+        selected_date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
+        selected_time = datetime.strptime(request.form["time"], "%H:%M:%S").time()
+
+        # check double booking
+        existing = Appointment.query.filter_by(
+            doctor_id=doctor_id,
+            date=selected_date,
+            time=selected_time
+        ).first()
+
+        if existing:
+            return "This slot is already taken."
+
+        # update appointment
+        appt.date = selected_date
+        appt.time = selected_time
+        appt.status = "Rescheduled"
+
+        db.session.commit()
+        return redirect("/patient/dashboard")
+
+    return render_template(
+        "patient_reschedule.html",
+        appt=appt,
+        avail_data=avail_data
+    )

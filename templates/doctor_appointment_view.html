@@ -19,8 +19,33 @@
 
 <hr>
 
-<h3>Past Medical History</h3>
+<h3>Update Medical Information</h3>
 
+<form method="POST">
+
+    <label><b>Diagnosis:</b></label><br>
+    <textarea name="diagnosis" rows="2" cols="50">{{ appt.diagnosis }}</textarea><br><br>
+
+    <label><b>Treatment Notes:</b></label><br>
+    <textarea name="treatment_notes" rows="3" cols="50">{{ appt.treatment_notes }}</textarea><br><br>
+
+    <label><b>Prescription:</b></label><br>
+    <textarea name="prescription" rows="2" cols="50">{{ appt.prescription }}</textarea><br><br>
+
+    <label><b>Status:</b></label>
+    <select name="status">
+        <option value="Booked" {% if appt.status=='Booked' %}selected{% endif %}>Booked</option>
+        <option value="Completed" {% if appt.status=='Completed' %}selected{% endif %}>Completed</option>
+        <option value="Cancelled" {% if appt.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+    </select>
+
+    <br><br>
+    <button type="submit">Save</button>
+</form>
+
+<hr>
+
+<h3>Past Medical History</h3>
 {% if history %}
 <table border="1" cellpadding="8">
     <tr>
@@ -40,6 +65,11 @@
     {% endfor %}
 </table>
 {% else %}
-<p>No previous history for this patient.</p>
+<p>No past history.</p>
 {% endif %}
 
+<br>
+<a href="/doctor/dashboard">Back</a>
+
+</body>
+</html>

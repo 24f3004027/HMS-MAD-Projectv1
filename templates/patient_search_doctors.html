@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Doctors</title>
+</head>
+<body>
+
+<h2>Search Doctors</h2>
+
+<form method="POST">
+    <label>Search (Name or Specialization):</label><br>
+    <input type="text" name="query" required>
+    <button type="submit">Search</button>
+</form>
+
+<hr>
+
+{% if doctors %}
+<h3>Results:</h3>
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Name</th>
+        <th>Specialization</th>
+        <th>Action</th>
+    </tr>
+
+    {% for d in doctors %}
+    <tr>
+        <td>{{ d.name }}</td>
+        <td>{{ d.department.name }}</td>
+        <td>
+            <a href="/patient/book/{{ d.id }}">Book Appointment</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+<p>No doctors found.</p>
+{% endif %}
+
+<br>
+<a href="/patient/dashboard">Back</a>
+
+</body>
+</html>
