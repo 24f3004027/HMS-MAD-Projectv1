@@ -1,22 +1,21 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .config import Config
 
-db = SQLAlchemy()
+db = SQLAlchemy()   # <-- db is created here
 
 def create_app():
-    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
-    app.config.from_object(Config)
+    app = Flask(__name__)
+    app.config["SECRET_KEY"] = "secretkey123"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hms.db"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
 
-    with app.app_context():
-        from . import models
-        db.create_all()
+    # import blueprints AFTER db is created
+    from .routes import routes
+    from .api import api
 
-        from .routes import routes
-        app.register_blueprint(routes)
+    app.register_blueprint(routes)
+    app.register_blueprint(api)
 
     return app
