@@ -1,16 +1,21 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from . import db
 from datetime import datetime
 
 # -----------------------------
 # 1. ADMIN (Predefined)
 # -----------------------------
-class Admin(db.Model):
+class Admin(UserMixin, db.Model):
     __tablename__ = "admins"
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+
+    # Unique login ID
+    def get_id(self):
+        return f"admin-{self.id}"
 
 
 # -----------------------------
@@ -28,7 +33,7 @@ class Department(db.Model):
 # -----------------------------
 # 3. DOCTOR
 # -----------------------------
-class Doctor(db.Model):
+class Doctor(UserMixin, db.Model):
     __tablename__ = "doctors"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -43,11 +48,14 @@ class Doctor(db.Model):
 
     appointments = db.relationship("Appointment", backref="doctor", lazy=True)
 
+    def get_id(self):
+        return f"doctor-{self.id}"
+
 
 # -----------------------------
 # 4. PATIENT
 # -----------------------------
-class Patient(db.Model):
+class Patient(UserMixin, db.Model):
     __tablename__ = "patients"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -63,6 +71,9 @@ class Patient(db.Model):
 
     appointments = db.relationship("Appointment", backref="patient", lazy=True)
 
+    def get_id(self):
+        return f"patient-{self.id}"
+
 
 # -----------------------------
 # 5. APPOINTMENT
@@ -77,8 +88,7 @@ class Appointment(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"), nullable=False)
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"), nullable=False)
 
-    # --- New fields for this milestone ---
-    status = db.Column(db.String(20), default="Booked")   # Booked / Completed / Cancelled
+    status = db.Column(db.String(20), default="Booked") 
     diagnosis = db.Column(db.Text, nullable=True)
     treatment_notes = db.Column(db.Text, nullable=True)
     prescription = db.Column(db.Text, nullable=True)
@@ -100,6 +110,7 @@ class Treatment(db.Model):
     cost = db.Column(db.Float)
 
     appointment_id = db.Column(db.Integer, db.ForeignKey("appointments.id"), nullable=False)
+
 
 # -----------------------------
 # 7. AVAILABILITY 
