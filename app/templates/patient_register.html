@@ -5,10 +5,9 @@
 </head>
 <body>
 
-<h2>Patient Registration</h2>
+<h2>Create Patient Account</h2>
 
 <form method="POST">
-
     <label>Name:</label><br>
     <input type="text" name="name" required><br><br>
 
@@ -16,10 +15,14 @@
     <input type="number" name="age" required><br><br>
 
     <label>Gender:</label><br>
-    <input type="text" name="gender" required><br><br>
+    <select name="gender" required>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+    </select><br><br>
 
     <label>Contact:</label><br>
-    <input type="text" name="contact" required><br><br>
+    <input type="text" name="contact"><br><br>
 
     <label>Email:</label><br>
     <input type="email" name="email" required><br><br>
@@ -31,7 +34,7 @@
 </form>
 
 <br>
-<a href="/patient/login">Already have an account? Login</a>
+<a href="/patient/login">Back to Login</a>
 
 </body>
 </html>

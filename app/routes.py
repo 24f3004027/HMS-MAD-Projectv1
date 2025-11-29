@@ -71,7 +71,6 @@ def patient_dashboard():
         return redirect("/patient/login")
 
     patient = Patient.query.get(session["patient_id"])
-
     today = date.today()
 
     upcoming = Appointment.query.filter_by(patient_id=patient.id).filter(
@@ -82,12 +81,20 @@ def patient_dashboard():
         Appointment.date < today
     ).all()
 
+    dates = [str(a.date) for a in past] if past else []
+    statuses = [a.status for a in past] if past else []
+    diagnoses = [a.diagnosis or "None" for a in past] if past else []
+
     return render_template(
         "patient_dashboard.html",
         patient=patient,
         upcoming=upcoming,
-        past=past
+        past=past,
+        dates=dates,
+        statuses=statuses,
+        diagnoses=diagnoses
     )
+
 
 
 
@@ -133,12 +140,21 @@ def doctor_dashboard():
         Appointment.date < today
     ).all()
 
+    # ---- Count statuses ----
+    booked = Appointment.query.filter_by(doctor_id=doctor_id, status="Booked").count()
+    completed = Appointment.query.filter_by(doctor_id=doctor_id, status="Completed").count()
+    cancelled = Appointment.query.filter_by(doctor_id=doctor_id, status="Cancelled").count()
+
     return render_template(
         "doctor_dashboard.html",
         todays=todays,
         upcoming=upcoming,
-        past=past
+        past=past,
+        booked=booked,
+        completed=completed,
+        cancelled=cancelled
     )
+
 
 @routes.route("/doctor/appointment/<int:appt_id>", methods=["GET", "POST"])
 def doctor_view_appointment(appt_id):

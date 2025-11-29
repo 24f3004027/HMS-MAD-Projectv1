@@ -2,24 +2,69 @@
 <html>
 <head>
     <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <h2>Admin Dashboard</h2>
 
-<h3>Statistics</h3>
-<ul>
-    <li>Total Doctors: {{ doctors }}</li>
-    <li>Total Patients: {{ patients }}</li>
-    <li>Total Appointments: {{ appointments }}</li>
-</ul>
+<p><b>Total Doctors:</b> {{ doctors }}</p>
+<p><b>Total Patients:</b> {{ patients }}</p>
+<p><b>Total Appointments:</b> {{ appointments }}</p>
 
-<h3>Actions</h3>
-<p><a href="/admin/doctors">View All Doctors</a></p>
-<p><a href="/admin/add_doctor">Add New Doctor</a></p>
-<p><a href="/admin/search_doctors">Search Doctors</a></p>
-<p><a href="/admin/search_patients">Search Patients</a></p>
-<p><a href="/admin/appointments">View All Appointments</a></p>
+<hr>
+
+<h3>Hospital Statistics</h3>
+
+<canvas id="statsChart" width="400" height="200"></canvas>
+
+<script>
+// Data from Flask
+const totalDoctors = {{ doctors }};
+const totalPatients = {{ patients }};
+const totalAppointments = {{ appointments }};
+
+// Chart.js
+const ctx = document.getElementById('statsChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Doctors', 'Patients', 'Appointments'],
+        datasets: [{
+            label: 'Hospital Stats',
+            data: [totalDoctors, totalPatients, totalAppointments],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(255, 159, 64, 0.6)',
+                'rgba(153, 102, 255, 0.6)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+
+<br><br>
+
+<a href="/admin/add_doctor">Add Doctor</a> |
+<a href="/admin/doctors">View Doctors</a> |
+<a href="/admin/appointments">View Appointments</a> |
+<a href="/logout">Logout</a>
 
 </body>
 </html>

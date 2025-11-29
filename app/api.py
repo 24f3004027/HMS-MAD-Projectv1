@@ -145,3 +145,30 @@ def create_appointment():
     db.session.commit()
 
     return jsonify({"message": "Appointment created"}), 201
+
+# ------------ ADMIN STATS ------------
+@api.route("/admin/stats", methods=["GET"])
+def admin_stats():
+    total_doctors = Doctor.query.count()
+    total_patients = Patient.query.count()
+    total_appointments = Appointment.query.count()
+
+    return jsonify({
+        "doctors": total_doctors,
+        "patients": total_patients,
+        "appointments": total_appointments
+    })
+
+
+# ------------ PATIENT APPOINTMENT STATUS ------------
+@api.route("/patient/<int:patient_id>/stats", methods=["GET"])
+def patient_stats(patient_id):
+    total_completed = Appointment.query.filter_by(patient_id=patient_id, status="Completed").count()
+    total_cancelled = Appointment.query.filter_by(patient_id=patient_id, status="Cancelled").count()
+    total_upcoming = Appointment.query.filter(Appointment.patient_id == patient_id, Appointment.date >= date.today()).count()
+
+    return jsonify({
+        "completed": total_completed,
+        "cancelled": total_cancelled,
+        "upcoming": total_upcoming
+    })

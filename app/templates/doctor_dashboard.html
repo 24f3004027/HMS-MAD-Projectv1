@@ -2,15 +2,17 @@
 <html>
 <head>
     <title>Doctor Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h2>Welcome, Dr. {{ session['doctor_name'] }}!</h2>
-<p>Your ID: {{ session['doctor_id'] }}</p>
+<h2>Welcome, {{ session['doctor_name'] }}!</h2>
+<p><b>Your ID:</b> {{ session['doctor_id'] }}</p>
 
 <hr>
 
 <h3>Today's Appointments</h3>
+
 {% if todays %}
 <table border="1" cellpadding="8">
     <tr>
@@ -36,7 +38,8 @@
 
 <hr>
 
-<h3>Upcoming (Next 7 Days)</h3>
+<h3>Upcoming Appointments</h3>
+
 {% if upcoming %}
 <table border="1" cellpadding="8">
     <tr>
@@ -63,6 +66,7 @@
 <hr>
 
 <h3>Past Appointments</h3>
+
 {% if past %}
 <table border="1" cellpadding="8">
     <tr>
@@ -86,9 +90,45 @@
 <p>No past appointments.</p>
 {% endif %}
 
-<br>
-<a href="/doctor/availability">Update Availability</a>
+<hr>
 
+<h2>📊 Appointment Status Distribution</h2>
+
+<canvas id="appointmentChart" width="400" height="200"></canvas>
+
+<script>
+    // Data from backend
+    const booked = {{ booked }};
+    const completed = {{ completed }};
+    const cancelled = {{ cancelled }};
+
+    const ctx = document.getElementById('appointmentChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Booked', 'Completed', 'Cancelled'],
+            datasets: [{
+                data: [booked, completed, cancelled],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(255, 99, 132, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+
+<br><br>
+
+<a href="/doctor/availability">Update Availability</a> |
 <a href="/logout">Logout</a>
 
 </body>
