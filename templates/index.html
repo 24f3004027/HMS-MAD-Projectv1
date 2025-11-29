@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HMS — Home</title>
+  <style>
+    /* Minimal clean styles so it looks presentable without external libs */
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 0; padding: 0; background: #f6f8fa; color: #111; }
+    header { background: #0b5fff; color: white; padding: 28px 20px; }
+    .container { max-width: 980px; margin: 28px auto; padding: 0 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 28px; }
+    p.lead { margin: 6px 0 18px 0; color: #e9f0ff; }
+    .cards { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+    .card { background: white; border-radius: 8px; padding: 16px; box-shadow: 0 6px 18px rgba(14,20,30,0.06); flex: 1 1 260px; min-width: 220px; }
+    .card h3 { margin: 0 0 8px 0; font-size: 18px; }
+    .card p { margin: 0 0 12px 0; color: #333; }
+    .btn { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #0b5fff; color: white; text-decoration: none; font-weight: 600; }
+    nav { margin-top: 12px; }
+    footer { margin: 36px 0; text-align: center; color: #556; font-size: 14px; }
+    .muted { color: #666; font-size: 14px; }
+    ul.links { padding-left: 16px; margin: 6px 0 0 0; }
+    ul.links li { margin: 6px 0; }
+    code { background:#eef3ff; padding:2px 6px; border-radius:4px; font-family:monospace; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>HMS — Hospital Management System</h1>
+      <p class="lead">A simple Flask + SQLAlchemy project for patient, doctor and admin workflows. Built for CS2003 — milestones tracked in the repo.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="min-width:220px">
+          <h2 style="margin:0 0 6px 0">Quick access</h2>
+          <p class="muted">Jump straight to the role-based pages.</p>
+          <nav>
+            <a class="btn" href="/patient/login">Patient Login</a>
+            <a class="btn" href="/doctor/login" style="background:#06a76b;margin-left:8px">Doctor Login</a>
+            <a class="btn" href="/admin/login" style="background:#ff6b6b;margin-left:8px">Admin Login</a>
+          </nav>
+        </div>
+
+        <div style="flex:1;min-width:260px">
+          <h3 style="margin:0 0 8px 0">Project info</h3>
+          <div class="card">
+            <h3>Milestones</h3>
+            <p class="muted">All core features implemented: authentication, booking, reschedule, cancel, doctor availability, treatment records, admin dashboard, and conflict prevention.</p>
+            <ul class="links">
+              <li><a href="/patient/search_doctors">Search Doctors (patient)</a></li>
+              <li><a href="/admin/appointments">View All Appointments (admin)</a></li>
+              <li><a href="/admin/doctors">Manage Doctors (admin)</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px">
+      <div class="cards">
+        <div class="card">
+          <h3>For Developers</h3>
+          <p class="muted">Local run: <code>python run.py</code>. Use the venv in the repo when installing dependencies.</p>
+          <p class="muted">Commit for milestone: <code>Milestone-HMS Appointment-Treatment</code></p>
+        </div>
+
+        <div class="card">
+          <h3>Test Accounts</h3>
+          <p><strong>Doctor</strong>: test@doctor.com / test123<br><strong>Patient</strong>: patient@test.com / test123<br><strong>Admin</strong>: admin / admin123</p>
+          <p class="muted">(Recreate via Python shell if DB was reset.)</p>
+        </div>
+
+        <div class="card">
+          <h3>Next steps</h3>
+          <p class="muted">Deploy, add notifications, UI styling (Bootstrap) or billing & invoices.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr style="margin:28px 0">
+
+    <section>
+      <h3>Quick links</h3>
+      <ul class="links">
+        <li><a href="/patient/register">Patient Registration</a></li>
+        <li><a href="/patient/dashboard">Patient Dashboard</a></li>
+        <li><a href="/doctor/dashboard">Doctor Dashboard</a></li>
+        <li><a href="/admin/dashboard">Admin Dashboard</a></li>
+        <li><a href="https://github.com/24f3004027/HMS-MAD-Projectv1" target="_blank" rel="noreferrer">GitHub repo</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="muted">HMS — small educational project • Commit with message <code>Milestone-HMS Appointment-Treatment</code></div>
+    </div>
+  </footer>
+</body>
+</html>
