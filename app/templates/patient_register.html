@@ -1,34 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Patient Registration</title>
+    <title>Register as Patient</title>
+
+    <script>
+    function validatePatientForm() {
+        const name = document.getElementById("name").value.trim();
+        const age = document.getElementById("age").value;
+        const contact = document.getElementById("contact").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        if (name.length < 3) {
+            alert("Name must be at least 3 characters.");
+            return false;
+        }
+
+        if (age <= 0 || age > 120) {
+            alert("Age must be between 1 and 120.");
+            return false;
+        }
+
+        if (!/^\d{10}$/.test(contact)) {
+            alert("Contact number must be 10 digits.");
+            return false;
+        }
+
+        const emailRegex = /^[\w\.-]+@[\w\.-]+\.\w+$/;
+        if (!emailRegex.test(email)) {
+            alert("Invalid email format.");
+            return false;
+        }
+
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters.");
+            return false;
+        }
+
+        return true;
+    }
+    </script>
+
 </head>
 <body>
 
 <h2>Create Patient Account</h2>
 
-<form method="POST">
+<form action="/patient/register" method="POST" onsubmit="return validatePatientForm()">
+
     <label>Name:</label><br>
-    <input type="text" name="name" required><br><br>
+    <input type="text" id="name" name="name" required><br><br>
 
     <label>Age:</label><br>
-    <input type="number" name="age" required><br><br>
+    <input type="number" id="age" name="age" min="1" max="120" required><br><br>
 
     <label>Gender:</label><br>
-    <select name="gender" required>
+    <select name="gender" id="gender" required>
+        <option value="">Select</option>
         <option>Male</option>
         <option>Female</option>
         <option>Other</option>
     </select><br><br>
 
-    <label>Contact:</label><br>
-    <input type="text" name="contact"><br><br>
+    <label>Contact Number:</label><br>
+    <input type="text" id="contact" name="contact" required><br><br>
 
     <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
+    <input type="email" id="email" name="email" required><br><br>
 
     <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+    <input type="password" id="password" name="password" required><br><br>
 
     <button type="submit">Register</button>
 </form>

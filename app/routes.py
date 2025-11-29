@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import Doctor, Patient, Appointment, Department, Admin, Availability, db
 from datetime import date, datetime, timedelta
+import re
 
 routes = Blueprint("routes", __name__)
 
@@ -21,12 +22,36 @@ def index():
 @routes.route("/patient/register", methods=["GET", "POST"])
 def patient_register():
     if request.method == "POST":
-        name = request.form["name"]
+        name = request.form["name"].strip()
         age = request.form["age"]
         gender = request.form["gender"]
-        contact = request.form["contact"]
-        email = request.form["email"]
+        contact = request.form["contact"].strip()
+        email = request.form["email"].strip()
         password = request.form["password"]
+
+        # --- Backend validation ---
+        if len(name) < 3:
+            return "Name must be at least 3 characters."
+
+        if not age.isdigit() or int(age) < 1 or int(age) > 120:
+            return "Invalid age."
+
+        if gender not in ["Male", "Female", "Other"]:
+            return "Invalid gender."
+
+        if not contact.isdigit() or len(contact) != 10:
+            return "Contact must be a 10-digit number."
+
+        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        if not re.match(email_regex, email):
+            return "Invalid email format."
+
+        if len(password) < 6:
+            return "Password must be at least 6 characters."
+
+        # Check duplicate email
+        if Patient.query.filter_by(email=email).first():
+            return "Email already exists."
 
         hashed_password = generate_password_hash(password)
 
@@ -50,17 +75,23 @@ def patient_register():
 @routes.route("/patient/login", methods=["GET", "POST"])
 def patient_login():
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form["email"].strip()
         password = request.form["password"]
+
+        if not email or not password:
+            return "Both fields required."
 
         patient = Patient.query.filter_by(email=email, is_active=True).first()
 
-        if patient and check_password_hash(patient.password_hash, password):
-            session["patient_id"] = patient.id
-            session["role"] = "patient"
-            return redirect("/patient/dashboard")
+        if not patient:
+            return "Invalid email."
 
-        return "Invalid email or password. Try again."
+        if not check_password_hash(patient.password_hash, password):
+            return "Incorrect password."
+
+        session["patient_id"] = patient.id
+        session["role"] = "patient"
+        return redirect("/patient/dashboard")
 
     return render_template("patient_login.html")
 
@@ -95,9 +126,6 @@ def patient_dashboard():
         diagnoses=diagnoses
     )
 
-
-
-
 # -------------------------
 # Doctor Pages
 # -------------------------
@@ -105,20 +133,27 @@ def patient_dashboard():
 @routes.route("/doctor/login", methods=["GET", "POST"])
 def doctor_login():
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form["email"].strip()
         password = request.form["password"]
+
+        if not email or not password:
+            return "Email and password required."
 
         doctor = Doctor.query.filter_by(email=email, is_active=True).first()
 
-        if doctor and check_password_hash(doctor.password_hash, password):
-            session["doctor_id"] = doctor.id
-            session["doctor_name"] = doctor.name
-            session["role"] = "doctor"
-            return redirect("/doctor/dashboard")
+        if not doctor:
+            return "Doctor does not exist or is blacklisted."
 
-        return "Invalid doctor credentials or blacklisted."
+        if not check_password_hash(doctor.password_hash, password):
+            return "Incorrect password."
+
+        session["doctor_id"] = doctor.id
+        session["doctor_name"] = doctor.name
+        session["role"] = "doctor"
+        return redirect("/doctor/dashboard")
 
     return render_template("doctor_login.html")
+
 
 @routes.route("/doctor/dashboard")
 def doctor_dashboard():
@@ -140,7 +175,6 @@ def doctor_dashboard():
         Appointment.date < today
     ).all()
 
-    # ---- Count statuses ----
     booked = Appointment.query.filter_by(doctor_id=doctor_id, status="Booked").count()
     completed = Appointment.query.filter_by(doctor_id=doctor_id, status="Completed").count()
     cancelled = Appointment.query.filter_by(doctor_id=doctor_id, status="Cancelled").count()
@@ -155,7 +189,6 @@ def doctor_dashboard():
         cancelled=cancelled
     )
 
-
 @routes.route("/doctor/appointment/<int:appt_id>", methods=["GET", "POST"])
 def doctor_view_appointment(appt_id):
     if "doctor_id" not in session:
@@ -163,11 +196,9 @@ def doctor_view_appointment(appt_id):
 
     appt = Appointment.query.get_or_404(appt_id)
 
-    # Prevent unauthorized access
     if appt.doctor_id != session["doctor_id"]:
         return "Unauthorized access.", 403
 
-    # Handle update
     if request.method == "POST":
         appt.diagnosis = request.form["diagnosis"]
         appt.treatment_notes = request.form["treatment_notes"]
@@ -175,10 +206,8 @@ def doctor_view_appointment(appt_id):
         appt.status = request.form["status"]
 
         db.session.commit()
-
         return redirect(f"/doctor/appointment/{appt_id}")
 
-    # Fetch patient history EXCEPT current appointment
     history = Appointment.query.filter(
         Appointment.patient_id == appt.patient_id,
         Appointment.id != appt.id
@@ -189,7 +218,6 @@ def doctor_view_appointment(appt_id):
         appt=appt,
         history=history
     )
-
 
 @routes.route("/doctor/appointment/update/<int:appt_id>", methods=["POST"])
 def doctor_update_appointment(appt_id):
@@ -207,7 +235,6 @@ def doctor_update_appointment(appt_id):
     appt.status = request.form["status"]
 
     db.session.commit()
-
     return redirect(f"/doctor/appointment/{appt_id}")
 
 
@@ -256,10 +283,26 @@ def add_doctor():
         return redirect("/admin/login")
 
     if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
+        name = request.form["name"].strip()
+        email = request.form["email"].strip()
         password = request.form["password"]
         dept_id = request.form["department_id"]
+
+        # Backend validation
+        if len(name) < 3:
+            return "Doctor name must be at least 3 characters."
+
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
+            return "Invalid email format."
+
+        if len(password) < 6:
+            return "Password must be at least 6 characters."
+
+        if not Department.query.get(dept_id):
+            return "Invalid department."
+
+        if Doctor.query.filter_by(email=email).first():
+            return "Email already exists for another doctor."
 
         hashed_pass = generate_password_hash(password)
 
@@ -278,15 +321,6 @@ def add_doctor():
     return render_template("add_doctor.html")
 
 
-@routes.route("/admin/doctors")
-def view_doctors():
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-
-    doctors = Doctor.query.filter_by(is_active=True).all()
-    return render_template("view_doctors.html", doctors=doctors)
-
-
 @routes.route("/admin/update_doctor/<int:doctor_id>", methods=["GET", "POST"])
 def update_doctor(doctor_id):
     if "admin_id" not in session:
@@ -295,14 +329,39 @@ def update_doctor(doctor_id):
     doctor = Doctor.query.get_or_404(doctor_id)
 
     if request.method == "POST":
-        doctor.name = request.form["name"]
-        doctor.email = request.form["email"]
-        doctor.department_id = request.form["department_id"]
+        name = request.form["name"].strip()
+        email = request.form["email"].strip()
+        dept_id = request.form["department_id"]
+
+        if len(name) < 3:
+            return "Name must be at least 3 characters."
+
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
+            return "Invalid email format."
+
+        if not Department.query.get(dept_id):
+            return "Invalid department."
+
+        existing = Doctor.query.filter_by(email=email).first()
+        if existing and existing.id != doctor.id:
+            return "Email already assigned to another doctor."
+
+        doctor.name = name
+        doctor.email = email
+        doctor.department_id = dept_id
 
         db.session.commit()
         return redirect("/admin/doctors")
 
     return render_template("update_doctor.html", doctor=doctor)
+
+@routes.route("/admin/doctors")
+def view_doctors():
+    if "admin_id" not in session:
+        return redirect("/admin/login")
+
+    doctors = Doctor.query.filter_by(is_active=True).all()
+    return render_template("view_doctors.html", doctors=doctors)
 
 
 @routes.route("/admin/search_doctors", methods=["GET", "POST"])
@@ -389,66 +448,10 @@ def logout():
     session.clear()
     return redirect("/")
 
-@routes.route("/doctor/availability", methods=["GET", "POST"])
-def doctor_availability():
-    if "doctor_id" not in session:
-        return redirect("/doctor/login")
 
-    doctor_id = session["doctor_id"]
-    today = date.today()
-
-    # Get or create availability for next 7 days
-    availability_list = []
-
-    for i in range(7):
-        d = today + timedelta(days=i)
-        avail = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
-        if not avail:
-            avail = Availability(doctor_id=doctor_id, date=d, is_available=True)
-            db.session.add(avail)
-        availability_list.append(avail)
-
-    db.session.commit()
-
-    # If doctor updates the form
-    if request.method == "POST":
-        for a in availability_list:
-            checkbox_name = f"day_{a.id}"
-            a.is_available = checkbox_name in request.form
-        db.session.commit()
-
-        return redirect("/doctor/availability")
-
-    return render_template("doctor_availability.html", availability=availability_list)
-
-@routes.route("/admin/doctor_credentials/<int:doctor_id>")
-def doctor_credentials(doctor_id):
-    if "admin_id" not in session:
-        return redirect("/admin/login")
-
-    doctor = Doctor.query.get_or_404(doctor_id)
-    return render_template("doctor_credentials.html", doctor=doctor)
-
-@routes.route("/patient/profile", methods=["GET", "POST"])
-def patient_profile():
-    if "patient_id" not in session:
-        return redirect("/patient/login")
-
-    patient = Patient.query.get(session["patient_id"])
-
-    if request.method == "POST":
-        patient.name = request.form["name"]
-        patient.age = request.form["age"]
-        patient.gender = request.form["gender"]
-        patient.contact = request.form["contact"]
-
-        # Email cannot change (optional rule, safer)
-        # patient.email = request.form["email"]
-
-        db.session.commit()
-        return redirect("/patient/dashboard")
-
-    return render_template("patient_profile.html", patient=patient)
+# -------------------------
+# Booking + Reschedule (with Validation)
+# -------------------------
 
 @routes.route("/patient/search_doctors", methods=["GET", "POST"])
 def patient_search_doctors():
@@ -469,6 +472,7 @@ def patient_search_doctors():
 
     return render_template("patient_search_doctors.html", doctors=results)
 
+
 @routes.route("/patient/book/<int:doctor_id>", methods=["GET", "POST"])
 def patient_book(doctor_id):
     if "patient_id" not in session:
@@ -476,11 +480,9 @@ def patient_book(doctor_id):
 
     doctor = Doctor.query.get_or_404(doctor_id)
 
-    # next 7 days
     today = date.today()
     days = [today + timedelta(days=i) for i in range(1, 8)]
 
-    # load availability for each day
     avail_data = []
     for d in days:
         slot = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
@@ -488,20 +490,38 @@ def patient_book(doctor_id):
             "date": d,
             "available": slot.is_available if slot else False
         })
-    
-    if request.method == "POST":
-        selected_date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
-        selected_time = datetime.strptime(request.form["time"], "%H:%M:%S").time()
 
-        # prevent double booking
+    if request.method == "POST":
+        try:
+            selected_date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
+            selected_time = datetime.strptime(request.form["time"], "%H:%M:%S").time()
+        except:
+            return "Invalid date or time format."
+
+        if selected_date < date.today():
+            return "You cannot book past dates."
+
+        avail = Availability.query.filter_by(doctor_id=doctor_id, date=selected_date).first()
+        if not avail or not avail.is_available:
+            return "Doctor is not available on this day."
+
+        # Prevent same-patient double booking
+        duplicate = Appointment.query.filter_by(
+            patient_id=session["patient_id"],
+            date=selected_date,
+            time=selected_time
+        ).first()
+        if duplicate:
+            return "You already have an appointment at this time."
+
+        # Prevent doctor double booking
         existing = Appointment.query.filter_by(
             doctor_id=doctor_id,
             date=selected_date,
             time=selected_time
         ).first()
-
         if existing:
-            return "This slot is already booked."
+            return "This time slot is already booked."
 
         appt = Appointment(
             doctor_id=doctor_id,
@@ -510,17 +530,17 @@ def patient_book(doctor_id):
             time=selected_time,
             status="Booked"
         )
+
         db.session.add(appt)
         db.session.commit()
-
         return redirect("/patient/dashboard")
-
 
     return render_template(
         "patient_book.html",
         doctor=doctor,
         avail_data=avail_data
     )
+
 
 @routes.route("/patient/cancel/<int:appt_id>")
 def patient_cancel(appt_id):
@@ -529,18 +549,16 @@ def patient_cancel(appt_id):
 
     appt = Appointment.query.get_or_404(appt_id)
 
-    # Prevent canceling others’ appointments
     if appt.patient_id != session["patient_id"]:
         return "Unauthorized action."
 
-    # Prevent canceling past appointments
     if appt.date < date.today():
         return "You cannot cancel past appointments."
 
     appt.status = "Cancelled"
     db.session.commit()
-
     return redirect("/patient/dashboard")
+
 
 @routes.route("/patient/reschedule/<int:appt_id>", methods=["GET", "POST"])
 def patient_reschedule(appt_id):
@@ -549,17 +567,14 @@ def patient_reschedule(appt_id):
 
     appt = Appointment.query.get_or_404(appt_id)
 
-    # cannot reschedule past appointments
     if appt.date < date.today():
         return "You cannot reschedule past appointments."
 
     doctor_id = appt.doctor_id
     today = date.today()
 
-    # next 7 days
     days = [today + timedelta(days=i) for i in range(1, 8)]
 
-    # load doctor availability
     avail_data = []
     for d in days:
         slot = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
@@ -569,20 +584,37 @@ def patient_reschedule(appt_id):
         })
 
     if request.method == "POST":
-        selected_date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
-        selected_time = datetime.strptime(request.form["time"], "%H:%M:%S").time()
+        try:
+            selected_date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
+            selected_time = datetime.strptime(request.form["time"], "%H:%M:%S").time()
+        except:
+            return "Invalid date or time format."
 
-        # check double booking
+        if selected_date < date.today():
+            return "Cannot reschedule to a past date."
+
+        avail = Availability.query.filter_by(doctor_id=doctor_id, date=selected_date).first()
+        if not avail or not avail.is_available:
+            return "Doctor unavailable on selected day."
+
+        # Prevent same patient duplicate
+        duplicate = Appointment.query.filter_by(
+            patient_id=session["patient_id"],
+            date=selected_date,
+            time=selected_time
+        ).first()
+        if duplicate:
+            return "You already have an appointment at this time."
+
+        # Prevent doctor double booking
         existing = Appointment.query.filter_by(
             doctor_id=doctor_id,
             date=selected_date,
             time=selected_time
         ).first()
-
         if existing:
-            return "This slot is already taken."
+            return "This slot is already booked."
 
-        # update appointment
         appt.date = selected_date
         appt.time = selected_time
         appt.status = "Rescheduled"

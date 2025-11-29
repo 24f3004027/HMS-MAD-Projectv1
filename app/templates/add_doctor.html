@@ -1,28 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Doctor</title>
+<title>Add Doctor</title>
+
+<script>
+function validateDoctorForm() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const dept = document.getElementById("department_id").value;
+
+    if (name.length < 3) {
+        alert("Name must be at least 3 characters.");
+        return false;
+    }
+
+    const emailRegex = /^[\w\.-]+@[\w\.-]+\.\w+$/;
+    if (!emailRegex.test(email)) {
+        alert("Invalid email format.");
+        return false;
+    }
+
+    if (password.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return false;
+    }
+
+    if (!dept) {
+        alert("Select a department.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+
 </head>
 <body>
 
-<h2>Add Doctor</h2>
+<h2>Add New Doctor</h2>
 
-<form method="POST" action="/admin/add_doctor">
-    
-    <label>Doctor Name:</label><br>
-    <input type="text" name="name" required><br><br>
-    
+<form action="/admin/add_doctor" method="POST" onsubmit="return validateDoctorForm()">
+
+    <label>Name:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+
     <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
+    <input type="email" id="email" name="email" required><br><br>
 
     <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+    <input type="password" id="password" name="password" required><br><br>
 
-    <label>Department ID:</label><br>
-    <input type="number" name="department_id" required><br><br>
+    <label>Department:</label><br>
+    <input type="number" id="department_id" name="department_id" required><br><br>
 
     <button type="submit">Add Doctor</button>
 </form>
+
+<br>
+<a href="/admin/dashboard">Back</a>
 
 </body>
 </html>

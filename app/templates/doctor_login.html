@@ -1,25 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Doctor Login</title>
+<title>Doctor Login</title>
+
+<script>
+function validateDoctorLogin() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        alert("Both fields are required.");
+        return false;
+    }
+    return true;
+}
+</script>
+
 </head>
 <body>
 
 <h2>Doctor Login</h2>
 
-<form method="POST">
+<form action="/doctor/login" method="POST" onsubmit="return validateDoctorLogin()">
 
     <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
+    <input type="email" id="email" name="email" required><br><br>
 
     <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+    <input type="password" id="password" name="password" required><br><br>
 
     <button type="submit">Login</button>
 </form>
 
 <br>
-<a href="/admin/add_doctor">Admin: Add Doctor</a>
+<a href="/">Back</a>
 
 </body>
 </html>

@@ -10,19 +10,24 @@ api = Blueprint("api", __name__, url_prefix="/api")
 @api.route("/appointments/<int:appt_id>", methods=["PUT"])
 def update_appointment(appt_id):
     appt = Appointment.query.get_or_404(appt_id)
-    data = request.json
+    data = request.json or {}
 
     if "date" in data:
-        appt.date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        try:
+            appt.date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        except:
+            return jsonify({"error": "Invalid date format"}), 400
 
     if "time" in data:
-        appt.time = datetime.strptime(data["time"], "%H:%M:%S").time()
+        try:
+            appt.time = datetime.strptime(data["time"], "%H:%M:%S").time()
+        except:
+            return jsonify({"error": "Invalid time format"}), 400
 
     if "status" in data:
         appt.status = data["status"]
 
     db.session.commit()
-
     return jsonify({"message": "Appointment updated successfully"}), 200
 
 
@@ -33,7 +38,6 @@ def update_appointment(appt_id):
 def delete_appointment(appt_id):
     appt = Appointment.query.get_or_404(appt_id)
 
-    # Optional rule: block deletion of past appointments
     if appt.date < date.today():
         return jsonify({"error": "Cannot delete past appointments"}), 403
 
@@ -44,7 +48,7 @@ def delete_appointment(appt_id):
 
 
 # ----------------------------------------
-# 3. GET ALL DOCTORS (GET)
+# 3. GET ALL DOCTORS
 # ----------------------------------------
 @api.route("/doctors", methods=["GET"])
 def get_doctors():
@@ -114,16 +118,36 @@ def get_appointments():
 
 
 # ----------------------------------------
-# 7. CREATE APPOINTMENT (POST)
+# 7. CREATE APPOINTMENT (POST) - FINAL VERSION
 # ----------------------------------------
 @api.route("/appointments", methods=["POST"])
 def create_appointment():
-    data = request.json
+    data = request.json or {}
 
-    date_obj = datetime.strptime(data["date"], "%Y-%m-%d").date()
-    time_obj = datetime.strptime(data["time"], "%H:%M:%S").time()
+    required = ["date", "time", "doctor_id", "patient_id"]
+    for key in required:
+        if key not in data:
+            return jsonify({"error": f"Missing field: {key}"}), 400
 
-    # Prevent double booking
+    # validate date/time
+    try:
+        date_obj = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        time_obj = datetime.strptime(data["time"], "%H:%M:%S").time()
+    except:
+        return jsonify({"error": "Invalid date/time format"}), 400
+
+    if date_obj < date.today():
+        return jsonify({"error": "Cannot create past appointment"}), 400
+
+    # doctor existence
+    if not Doctor.query.get(data["doctor_id"]):
+        return jsonify({"error": "Invalid doctor ID"}), 404
+
+    # patient existence
+    if not Patient.query.get(data["patient_id"]):
+        return jsonify({"error": "Invalid patient ID"}), 404
+
+    # double booking
     exists = Appointment.query.filter_by(
         doctor_id=data["doctor_id"],
         date=date_obj,
@@ -131,8 +155,9 @@ def create_appointment():
     ).first()
 
     if exists:
-        return jsonify({"error": "Doctor is already booked for this slot"}), 409
+        return jsonify({"error": "Slot already booked"}), 409
 
+    # create appointment
     appt = Appointment(
         date=date_obj,
         time=time_obj,
@@ -146,29 +171,26 @@ def create_appointment():
 
     return jsonify({"message": "Appointment created"}), 201
 
+
 # ------------ ADMIN STATS ------------
 @api.route("/admin/stats", methods=["GET"])
 def admin_stats():
-    total_doctors = Doctor.query.count()
-    total_patients = Patient.query.count()
-    total_appointments = Appointment.query.count()
-
     return jsonify({
-        "doctors": total_doctors,
-        "patients": total_patients,
-        "appointments": total_appointments
+        "doctors": Doctor.query.count(),
+        "patients": Patient.query.count(),
+        "appointments": Appointment.query.count()
     })
 
 
-# ------------ PATIENT APPOINTMENT STATUS ------------
+# ------------ PATIENT APPOINTMENT STATS ------------
 @api.route("/patient/<int:patient_id>/stats", methods=["GET"])
 def patient_stats(patient_id):
-    total_completed = Appointment.query.filter_by(patient_id=patient_id, status="Completed").count()
-    total_cancelled = Appointment.query.filter_by(patient_id=patient_id, status="Cancelled").count()
-    total_upcoming = Appointment.query.filter(Appointment.patient_id == patient_id, Appointment.date >= date.today()).count()
+    completed = Appointment.query.filter_by(patient_id=patient_id, status="Completed").count()
+    cancelled = Appointment.query.filter_by(patient_id=patient_id, status="Cancelled").count()
+    upcoming = Appointment.query.filter(Appointment.patient_id == patient_id, Appointment.date >= date.today()).count()
 
     return jsonify({
-        "completed": total_completed,
-        "cancelled": total_cancelled,
-        "upcoming": total_upcoming
+        "completed": completed,
+        "cancelled": cancelled,
+        "upcoming": upcoming
     })
