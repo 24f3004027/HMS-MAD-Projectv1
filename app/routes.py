@@ -276,7 +276,6 @@ def admin_dashboard():
         appointments=total_appointments
     )
 
-
 @routes.route("/admin/add_doctor", methods=["GET", "POST"])
 def add_doctor():
     if "admin_id" not in session:
@@ -298,9 +297,11 @@ def add_doctor():
         if len(password) < 6:
             return "Password must be at least 6 characters."
 
+        # Check valid department
         if not Department.query.get(dept_id):
             return "Invalid department."
 
+        # Check duplicate email
         if Doctor.query.filter_by(email=email).first():
             return "Email already exists for another doctor."
 
@@ -318,8 +319,9 @@ def add_doctor():
 
         return redirect("/admin/dashboard")
 
-    return render_template("add_doctor.html")
-
+    # FIX: Load departments for dropdown
+    departments = Department.query.all()
+    return render_template("add_doctor.html", departments=departments)
 
 @routes.route("/admin/update_doctor/<int:doctor_id>", methods=["GET", "POST"])
 def update_doctor(doctor_id):
@@ -719,3 +721,21 @@ def doctor_credentials(doctor_id):
     doctor = Doctor.query.get_or_404(doctor_id)
 
     return render_template("doctor_credentials.html", doctor=doctor)
+
+@routes.route("/admin/patients")
+def admin_view_patients():
+    if "admin_id" not in session:
+        return redirect("/admin/login")
+
+    patients = Patient.query.filter_by(is_active=True).all()
+    return render_template("view_patients.html", patients=patients)
+
+
+@routes.route("/admin/patient_credentials/<int:patient_id>")
+def admin_patient_credentials(patient_id):
+    if "admin_id" not in session:
+        return redirect("/admin/login")
+
+    patient = Patient.query.get_or_404(patient_id)
+
+    return render_template("patient_credentials.html", patient=patient)
