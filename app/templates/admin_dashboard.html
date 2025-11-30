@@ -1,70 +1,281 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.14);
+      --glass-border: rgba(255, 255, 255, 0.35);
+      --glass-shadow: 0 24px 60px rgba(15, 23, 42, 0.45);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, #38bdf8 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, #a855f7 0, transparent 55%),
+        linear-gradient(135deg, #020617 0%, #020617 40%, #0b1120 100%);
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar-glass {
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 253, 0.45);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.7);
+    }
+
+    .btn-glass {
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.65), rgba(129, 140, 248, 0.85));
+      color: #f9fafb;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.55);
+    }
+
+    .btn-glass:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 18px 48px rgba(59, 130, 246, 0.75);
+      transform: translateY(-1px);
+    }
+
+    .page-shell {
+      flex: 1;
+      padding: 2.4rem 1rem 2.8rem;
+    }
+
+    .glass-main {
+      border-radius: 1.6rem;
+      background: radial-gradient(circle at top left, rgba(148, 163, 253, 0.28), transparent 60%),
+                  radial-gradient(circle at bottom right, rgba(52, 211, 153, 0.25), transparent 55%),
+                  rgba(15, 23, 42, 0.65);
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 253, 0.5);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      padding: 1.6rem 1.7rem;
+    }
+
+    @media (min-width: 992px) {
+      .glass-main {
+        padding: 2.3rem 2.4rem;
+      }
+    }
+
+    .stat-card {
+      background: var(--glass-bg);
+      border-radius: 1.2rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      padding: 1rem 1.1rem;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+      margin-bottom: 0.2rem;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .muted-small {
+      font-size: 0.82rem;
+      color: #9ca3af;
+    }
+
+    .glass-section {
+      background: var(--glass-bg);
+      border-radius: 1.3rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      padding: 1.4rem 1.5rem;
+    }
+
+    .glass-section h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    a.link-light-soft {
+      color: #c7d2fe;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    a.link-light-soft:hover {
+      color: #e5e7eb;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-glass">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="/admin/dashboard">
+        HMS
+        <span class="ms-1 text-primary-emphasis" style="font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;">
+          Admin
+        </span>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navMain">
+        <ul class="navbar-nav align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link small" href="/admin/doctors">Doctors</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link small" href="/admin/appointments">Appointments</a>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <a class="btn btn-sm btn-glass" href="/logout">
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<h2>Admin Dashboard</h2>
+  <!-- Main glass panel -->
+  <div class="page-shell">
+    <div class="container">
+      <div class="glass-main">
+        <!-- Header with top-right actions -->
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-4">
+          <div>
+            <h2 class="mb-1" style="font-size:1.5rem;">Admin Dashboard</h2>
+            <p class="muted-small mb-0">
+              Overview of hospital activity and key counts for your HMS instance.
+            </p>
+          </div>
 
-<p><b>Total Doctors:</b> {{ doctors }}</p>
-<p><b>Total Patients:</b> {{ patients }}</p>
-<p><b>Total Appointments:</b> {{ appointments }}</p>
+          <div class="d-flex flex-column align-items-lg-end gap-2">
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+              <a href="/admin/add_doctor" class="btn btn-glass btn-sm">
+                + Add Doctor
+              </a>
+            </div>
+            <div class="d-flex flex-wrap justify-content-end gap-3">
+              <a href="/admin/add_doctor" class="link-light-soft">Add Doctor</a>
+              <a href="/admin/doctors" class="link-light-soft">View Doctors</a>
+              <a href="/admin/appointments" class="link-light-soft">View Appointments</a>
+              <a href="/logout" class="link-light-soft">Logout</a>
+            </div>
+          </div>
+        </div>
 
-<hr>
+        <!-- Stats cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="stat-card h-100">
+              <div class="stat-label">Total Doctors</div>
+              <div class="stat-value">{{ doctors }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card h-100">
+              <div class="stat-label">Total Patients</div>
+              <div class="stat-value">{{ patients }}</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card h-100">
+              <div class="stat-label">Total Appointments</div>
+              <div class="stat-value">{{ appointments }}</div>
+            </div>
+          </div>
+        </div>
 
-<h3>Hospital Statistics</h3>
+        <!-- Chart section (Chart.js logic unchanged) -->
+        <div class="glass-section mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="mb-0">Hospital Statistics</h3>
+            <span class="muted-small">Bar chart • doctors, patients, appointments</span>
+          </div>
+          <div class="mt-2">
+            <canvas id="statsChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<canvas id="statsChart" width="400" height="200"></canvas>
+  <!-- Chart.js logic -->
+  <script>
+    // Data from Flask
+    const totalDoctors = {{ doctors }};
+    const totalPatients = {{ patients }};
+    const totalAppointments = {{ appointments }};
 
-<script>
-// Data from Flask
-const totalDoctors = {{ doctors }};
-const totalPatients = {{ patients }};
-const totalAppointments = {{ appointments }};
+    // Chart.js
+    const ctx = document.getElementById('statsChart').getContext('2d');
 
-// Chart.js
-const ctx = document.getElementById('statsChart').getContext('2d');
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
         labels: ['Doctors', 'Patients', 'Appointments'],
         datasets: [{
-            label: 'Hospital Stats',
-            data: [totalDoctors, totalPatients, totalAppointments],
-            backgroundColor: [
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(255, 159, 64, 0.6)',
-                'rgba(153, 102, 255, 0.6)'
-            ],
-            borderColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(153, 102, 255, 1)'
-            ],
-            borderWidth: 1
+          label: 'Hospital Stats',
+          data: [totalDoctors, totalPatients, totalAppointments],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(153, 102, 255, 0.6)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(153, 102, 255, 1)'
+          ],
+          borderWidth: 1
         }]
-    },
-    options: {
+      },
+      options: {
         responsive: true,
         plugins: {
-            legend: { display: true }
+          legend: { display: true }
         },
         scales: {
-            y: { beginAtZero: true }
+          y: { beginAtZero: true }
         }
-    }
-});
-</script>
+      }
+    });
+  </script>
 
-<br><br>
-
-<a href="/admin/add_doctor">Add Doctor</a> |
-<a href="/admin/doctors">View Doctors</a> |
-<a href="/admin/appointments">View Appointments</a> |
-<a href="/logout">Logout</a>
-
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

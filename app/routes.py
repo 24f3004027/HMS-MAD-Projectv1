@@ -486,9 +486,19 @@ def patient_book(doctor_id):
     avail_data = []
     for d in days:
         slot = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
+
+        if not slot:
+            slot = Availability(
+                doctor_id=doctor_id,
+                date=d,
+                is_available=True
+            )
+            db.session.add(slot)
+            db.session.commit()
+
         avail_data.append({
             "date": d,
-            "available": slot.is_available if slot else False
+            "available": slot.is_available
         })
 
     if request.method == "POST":
@@ -505,7 +515,6 @@ def patient_book(doctor_id):
         if not avail or not avail.is_available:
             return "Doctor is not available on this day."
 
-        # Prevent same-patient double booking
         duplicate = Appointment.query.filter_by(
             patient_id=session["patient_id"],
             date=selected_date,
@@ -514,7 +523,6 @@ def patient_book(doctor_id):
         if duplicate:
             return "You already have an appointment at this time."
 
-        # Prevent doctor double booking
         existing = Appointment.query.filter_by(
             doctor_id=doctor_id,
             date=selected_date,
@@ -540,7 +548,6 @@ def patient_book(doctor_id):
         doctor=doctor,
         avail_data=avail_data
     )
-
 
 @routes.route("/patient/cancel/<int:appt_id>")
 def patient_cancel(appt_id):
@@ -627,3 +634,88 @@ def patient_reschedule(appt_id):
         appt=appt,
         avail_data=avail_data
     )
+
+@routes.route("/patient/profile", methods=["GET", "POST"])
+def patient_profile():
+    if "patient_id" not in session:
+        return redirect("/patient/login")
+
+    patient = Patient.query.get_or_404(session["patient_id"])
+
+    if request.method == "POST":
+        name = request.form["name"].strip()
+        age = request.form["age"]
+        gender = request.form["gender"].strip()
+        contact = request.form["contact"].strip()
+
+        # Simple backend validation
+        if len(name) < 3:
+            return "Name must be at least 3 characters."
+
+        if not age.isdigit() or int(age) < 1 or int(age) > 120:
+            return "Invalid age."
+
+        if gender not in ["Male", "Female", "Other"]:
+            return "Invalid gender."
+
+        if not contact.isdigit() or len(contact) != 10:
+            return "Contact must be a 10-digit number."
+
+        # Save updated data
+        patient.name = name
+        patient.age = int(age)
+        patient.gender = gender
+        patient.contact = contact
+
+        db.session.commit()
+        return redirect("/patient/dashboard")
+
+    return render_template("patient_profile.html", patient=patient)
+
+@routes.route("/doctor/availability", methods=["GET", "POST"])
+def doctor_availability():
+    if "doctor_id" not in session:
+        return redirect("/doctor/login")
+
+    doctor_id = session["doctor_id"]
+
+    # next 7 days
+    today = date.today()
+    days = [today + timedelta(days=i) for i in range(1, 8)]
+
+    if request.method == "POST":
+        # Loop through all 7 day checkboxes
+        for d in days:
+            key = f"day_{d}"
+            checked = request.form.get(key) == "on"
+
+            slot = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
+            if not slot:
+                slot = Availability(doctor_id=doctor_id, date=d)
+
+            slot.is_available = checked
+            db.session.add(slot)
+
+        db.session.commit()
+        return redirect("/doctor/availability")
+
+    # GET request → load all availability
+    availability = []
+    for d in days:
+        slot = Availability.query.filter_by(doctor_id=doctor_id, date=d).first()
+        availability.append({
+            "id": d,                         # id replaced with date since you loop day_{{date}}
+            "date": d.strftime("%Y-%m-%d"),
+            "is_available": slot.is_available if slot else False
+        })
+
+    return render_template("doctor_availability.html", availability=availability)
+
+@routes.route("/admin/doctor_credentials/<int:doctor_id>")
+def doctor_credentials(doctor_id):
+    if "admin_id" not in session:
+        return redirect("/admin/login")
+
+    doctor = Doctor.query.get_or_404(doctor_id)
+
+    return render_template("doctor_credentials.html", doctor=doctor)

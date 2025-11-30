@@ -1,102 +1,317 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Doctor Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doctor Dashboard</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.14);
+      --glass-border: rgba(255, 255, 255, 0.35);
+      --glass-shadow: 0 24px 60px rgba(15, 23, 42, 0.45);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, #38bdf8 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, #a855f7 0, transparent 55%),
+        linear-gradient(135deg, #020617 0%, #020617 40%, #0b1120 100%);
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar-glass {
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 253, 0.45);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.7);
+    }
+
+    .page-shell {
+      flex: 1;
+      padding: 2.4rem 1rem 2.8rem;
+    }
+
+    .glass-main {
+      border-radius: 1.6rem;
+      background: radial-gradient(circle at top left, rgba(148, 163, 253, 0.28), transparent 60%),
+                  radial-gradient(circle at bottom right, rgba(52, 211, 153, 0.25), transparent 55%),
+                  rgba(15, 23, 42, 0.65);
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 253, 0.5);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      padding: 1.8rem 1.9rem;
+    }
+
+    @media (min-width: 992px) {
+      .glass-main {
+        padding: 2.4rem 2.5rem;
+      }
+    }
+
+    .section-card {
+      background: var(--glass-bg);
+      border-radius: 1.3rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      padding: 1.3rem 1.4rem;
+    }
+
+    .section-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .muted-small {
+      font-size: 0.82rem;
+      color: #9ca3af;
+    }
+
+    table.table-glass {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      color: #e5e7eb;
+    }
+
+    table.table-glass th,
+    table.table-glass td {
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid rgba(148, 163, 253, 0.25);
+    }
+
+    table.table-glass thead th {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      border-bottom-color: rgba(148, 163, 253, 0.5);
+    }
+
+    .btn-glass {
+      border-radius: 999px;
+      padding: 0.45rem 1.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.65), rgba(129, 140, 248, 0.85));
+      color: #f9fafb;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.55);
+    }
+
+    .btn-glass:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 18px 48px rgba(59, 130, 246, 0.75);
+      transform: translateY(-1px);
+    }
+
+    a.link-light-soft {
+      color: #c7d2fe;
+      text-decoration: none;
+      font-size: 0.88rem;
+    }
+
+    a.link-light-soft:hover {
+      color: #e5e7eb;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-glass">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="/doctor/dashboard">
+        HMS
+        <span class="ms-1 text-primary-emphasis" style="font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;">
+          Doctor
+        </span>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navMain">
+        <ul class="navbar-nav align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link small" href="/doctor/availability">Availability</a>
+          </li>
+          <li class="nav-item mt-2 mt-lg-0">
+            <a class="btn btn-sm btn-glass" href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<h2>Welcome, {{ session['doctor_name'] }}!</h2>
-<p><b>Your ID:</b> {{ session['doctor_id'] }}</p>
+  <!-- Main glass panel -->
+  <div class="page-shell">
+    <div class="container">
+      <div class="glass-main">
+        <!-- Header -->
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-2 mb-4">
+          <div>
+            <h2 class="mb-1" style="font-size:1.4rem;">
+              Welcome, {{ session['doctor_name'] }}!
+            </h2>
+            <p class="muted-small mb-0">
+              Your ID: {{ session['doctor_id'] }}
+            </p>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="/doctor/availability" class="btn btn-glass btn-sm">
+              Update Availability
+            </a>
+          </div>
+        </div>
 
-<hr>
+        <!-- Today's and upcoming appointments -->
+        <div class="row g-3 mb-4">
+          <div class="col-lg-6">
+            <div class="section-card h-100">
+              <h3>Today's Appointments</h3>
+              {% if todays %}
+              <div class="table-responsive mt-2">
+                <table class="table-glass">
+                  <thead>
+                    <tr>
+                      <th>Patient</th>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for a in todays %}
+                    <tr>
+                      <td>{{ a.patient.name }}</td>
+                      <td>{{ a.date }}</td>
+                      <td>{{ a.time }}</td>
+                      <td>{{ a.status }}</td>
+                      <td><a class="link-light-soft" href="/doctor/appointment/{{ a.id }}">View</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p class="muted-small mt-2 mb-0">No appointments for today.</p>
+              {% endif %}
+            </div>
+          </div>
 
-<h3>Today's Appointments</h3>
+          <div class="col-lg-6">
+            <div class="section-card h-100">
+              <h3>Upcoming Appointments</h3>
+              {% if upcoming %}
+              <div class="table-responsive mt-2">
+                <table class="table-glass">
+                  <thead>
+                    <tr>
+                      <th>Patient</th>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for a in upcoming %}
+                    <tr>
+                      <td>{{ a.patient.name }}</td>
+                      <td>{{ a.date }}</td>
+                      <td>{{ a.time }}</td>
+                      <td>{{ a.status }}</td>
+                      <td><a class="link-light-soft" href="/doctor/appointment/{{ a.id }}">View</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p class="muted-small mt-2 mb-0">No upcoming appointments.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
 
-{% if todays %}
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Patient</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    {% for a in todays %}
-    <tr>
-        <td>{{ a.patient.name }}</td>
-        <td>{{ a.date }}</td>
-        <td>{{ a.time }}</td>
-        <td>{{ a.status }}</td>
-        <td><a href="/doctor/appointment/{{ a.id }}">View</a></td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>No appointments for today.</p>
-{% endif %}
+        <!-- Past + chart row -->
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <div class="section-card h-100">
+              <h3>Past Appointments</h3>
+              {% if past %}
+              <div class="table-responsive mt-2">
+                <table class="table-glass">
+                  <thead>
+                    <tr>
+                      <th>Patient</th>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for a in past %}
+                    <tr>
+                      <td>{{ a.patient.name }}</td>
+                      <td>{{ a.date }}</td>
+                      <td>{{ a.time }}</td>
+                      <td>{{ a.status }}</td>
+                      <td><a class="link-light-soft" href="/doctor/appointment/{{ a.id }}">View</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p class="muted-small mt-2 mb-0">No past appointments.</p>
+              {% endif %}
+            </div>
+          </div>
 
-<hr>
+          <div class="col-lg-5">
+            <div class="section-card h-100 d-flex flex-column">
+              <h3 class="mb-2">Appointment Status Distribution</h3>
+              <p class="muted-small mb-2">Booked vs completed vs cancelled for this doctor.</p>
+              <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height:220px;">
+                <canvas id="appointmentChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<h3>Upcoming Appointments</h3>
+        <!-- Footer actions -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <a href="/doctor/availability" class="link-light-soft">Update Availability</a>
+          <a href="/logout" class="link-light-soft">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-{% if upcoming %}
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Patient</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    {% for a in upcoming %}
-    <tr>
-        <td>{{ a.patient.name }}</td>
-        <td>{{ a.date }}</td>
-        <td>{{ a.time }}</td>
-        <td>{{ a.status }}</td>
-        <td><a href="/doctor/appointment/{{ a.id }}">View</a></td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>No upcoming appointments.</p>
-{% endif %}
-
-<hr>
-
-<h3>Past Appointments</h3>
-
-{% if past %}
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Patient</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    {% for a in past %}
-    <tr>
-        <td>{{ a.patient.name }}</td>
-        <td>{{ a.date }}</td>
-        <td>{{ a.time }}</td>
-        <td>{{ a.status }}</td>
-        <td><a href="/doctor/appointment/{{ a.id }}">View</a></td>
-    </tr>
-    {% endfor %}
-</table>
-{% else %}
-<p>No past appointments.</p>
-{% endif %}
-
-<hr>
-
-<h2>📊 Appointment Status Distribution</h2>
-
-<canvas id="appointmentChart" width="400" height="200"></canvas>
-
-<script>
+  <!-- Chart.js logic (unchanged) -->
+  <script>
     // Data from backend
     const booked = {{ booked }};
     const completed = {{ completed }};
@@ -105,31 +320,28 @@
     const ctx = document.getElementById('appointmentChart').getContext('2d');
 
     new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Booked', 'Completed', 'Cancelled'],
-            datasets: [{
-                data: [booked, completed, cancelled],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.7)',
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(255, 99, 132, 0.7)'
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(255, 99, 132, 1)'
-                ],
-                borderWidth: 1
-            }]
-        }
+      type: 'doughnut',
+      data: {
+        labels: ['Booked', 'Completed', 'Cancelled'],
+        datasets: [{
+          data: [booked, completed, cancelled],
+          backgroundColor: [
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(255, 99, 132, 0.7)'
+          ],
+          borderColor: [
+            'rgba(54, 162, 235, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 99, 132, 1)'
+          ],
+          borderWidth: 1
+        }]
+      }
     });
-</script>
+  </script>
 
-<br><br>
-
-<a href="/doctor/availability">Update Availability</a> |
-<a href="/logout">Logout</a>
-
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
