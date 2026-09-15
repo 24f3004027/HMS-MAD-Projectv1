@@ -1,235 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HMS — Home</title>
+{% extends "base.html" %}
 
-  <!-- Bootstrap 5 CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}ParkSmart Healthcare - Modern HMS{% endblock %}
 
-  <style>
-    :root {
-      --glass-bg: rgba(255, 255, 255, 0.12);
-      --glass-border: rgba(255, 255, 255, 0.5);
-      --glass-shadow: 0 30px 80px rgba(15, 23, 42, 0.8);
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #e5e7eb;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.9) 0, transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(244, 114, 182, 0.9) 0, transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(52, 211, 153, 0.9) 0, transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(251, 191, 36, 0.85) 0, transparent 55%),
-        linear-gradient(135deg, #020617 0%, #020617 40%, #020617 100%);
-    }
-
-    .shell {
-      padding: 2.5rem 1.25rem;
-      width: 100%;
-      max-width: 540px;
-    }
-
-    .glass-card {
-      position: relative;
-      border-radius: 1.8rem;
-      padding: 2.1rem 2rem 2.3rem;
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.86));
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow);
-      overflow: hidden;
-    }
-
-    .glass-card::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      background: conic-gradient(
-        from 200deg,
-        rgba(56, 189, 248, 0.9),
-        rgba(244, 114, 182, 0.9),
-        rgba(251, 191, 36, 0.9),
-        rgba(52, 211, 153, 0.9),
-        rgba(56, 189, 248, 0.9)
-      );
-      opacity: 0.9;
-      z-index: -2;
-    }
-
-    .glass-card::after {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: inherit;
-      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.96));
-      z-index: -1;
-    }
-
-    h1 {
-      font-size: 1.55rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-    }
-
-    .tagline {
-      font-size: 0.9rem;
-      color: #9ca3af;
-      margin-bottom: 1.4rem;
-    }
-
-    .badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.28rem 0.8rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      background: rgba(56, 189, 248, 0.14);
-      border: 1px solid rgba(165, 243, 252, 0.8);
-      color: #a5f3fc;
-      margin-bottom: 1rem;
-    }
-
-    .badge-pill span {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    .section-label {
-      font-size: 0.8rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #6b7280;
-      margin-top: 0.4rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .btn-role {
-      border-radius: 999px;
-      padding: 0.55rem 1.4rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
-      text-decoration: none;
-    }
-
-    .btn-role span.dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      display: inline-block;
-    }
-
-    .btn-role-admin span.dot {
-      background: #fb7185;
-    }
-
-    .btn-role-doctor span.dot {
-      background: #22c55e;
-    }
-
-    .btn-role-patient span.dot {
-      background: #38bdf8;
-    }
-
-    .btn-role-register span.dot {
-      background: #facc15;
-    }
-
-    .btn-role:hover {
-      color: #f9fafb;
-      border-color: rgba(255, 255, 255, 0.4);
-      transform: translateY(-1px);
-      box-shadow: 0 18px 44px rgba(15, 23, 42, 1);
-    }
-
-    .links-row {
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-      align-items: stretch;
-      justify-content: center;
-    }
-
-    @media (min-width: 576px) {
-      .links-row {
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-    }
-
-    .footnote {
-      font-size: 0.78rem;
-      color: #6b7280;
-      margin-top: 1.6rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="shell">
-    <div class="glass-card mx-auto">
-      <div class="badge-pill mb-3">
-        <span>HMS APP V1</span>
-        <span>©</span>
-        <span>IITM_2025</span>
-      </div>
-
-      <h1>Welcome to HMS App V1</h1>
-      <div class="tagline">
-        by Ramrup Satpati
-      </div>
-
-      <div class="section-label">
-        Jump right in
-      </div>
-
-      <div class="links-row mb-1">
-        <a href="/admin/login" class="btn-role btn-role-admin">
-          <span class="dot"></span>
-          Admin Login
-        </a>
-        <a href="/doctor/login" class="btn-role btn-role-doctor">
-          <span class="dot"></span>
-          Doctor Login
-        </a>
-        <a href="/patient/login" class="btn-role btn-role-patient">
-          <span class="dot"></span>
-          Patient Login
-        </a>
-        <a href="/patient/register" class="btn-role btn-role-register">
-          <span class="dot"></span>
-          Patient Register
-        </a>
-      </div>
-
-      <div class="footnote">
-        Minimal glassmorphic shell • Flask + SQLAlchemy backend already wired.
-      </div>
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-12 col-lg-7 mb-4 mb-lg-0">
+        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-3 py-2 rounded-pill mb-3">
+            <i class="fa-solid fa-heart-pulse me-1"></i> Full-Stack Healthcare Appointment Platform
+        </span>
+        <h1 class="display-4 fw-extrabold mb-3">
+            Modern Hospital Management <span class="text-info">System</span>
+        </h1>
+        <p class="lead text-muted mb-4">
+            Streamlined healthcare workflow connecting patients with specialist doctors, automated appointment scheduling, electronic medical records, and real-time hospital analytics.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+            <a href="{{ url_for('routes.patient_register') }}" class="btn btn-gradient-primary water-ripple btn-lg fw-bold">
+                <i class="fa-solid fa-user-plus me-2"></i> Register as Patient
+            </a>
+            <a href="{{ url_for('routes.login') }}" class="btn btn-outline-info btn-lg rounded-3 fw-semibold">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Portal
+            </a>
+        </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <div class="col-12 col-lg-5">
+        <div class="glass-card p-4 glass-card-hover border-info border-opacity-25">
+            <h4 class="fw-bold mb-3 text-main"><i class="fa-solid fa-user-shield text-info me-2"></i>Portal Access Selector</h4>
+            <div class="d-flex flex-column gap-3">
+                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between text-decoration-none">
+                    <div>
+                        <span class="fw-bold text-main d-block"><i class="fa-solid fa-user-gear me-2 text-danger"></i> Administrator</span>
+                        <span class="text-muted small">Manage doctors, departments, and hospital metrics</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                </a>
+
+                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between text-decoration-none">
+                    <div>
+                        <span class="fw-bold text-main d-block"><i class="fa-solid fa-user-doctor me-2 text-info"></i> Specialist Doctor</span>
+                        <span class="text-muted small">Manage schedules, write prescriptions and diagnoses</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                </a>
+
+                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between text-decoration-none">
+                    <div>
+                        <span class="fw-bold text-main d-block"><i class="fa-solid fa-heart-circle-check me-2 text-success"></i> Patient</span>
+                        <span class="text-muted small">Book appointments and access medical treatment history</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Specialists Carousel Preview -->
+<div class="my-5">
+    <h3 class="fw-bold mb-4 text-main"><i class="fa-solid fa-stethoscope text-info me-2"></i>Our Specialist Doctors</h3>
+    <div class="row g-4">
+        {% for doctor in doctors %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column glass-card-hover">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-info bg-opacity-20 text-info p-3 rounded-circle fs-3">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-main">{{ doctor.name }}</h5>
+                        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25">{{ doctor.department.name }}</span>
+                    </div>
+                </div>
+                <p class="text-muted small mb-2"><i class="fa-solid fa-award text-warning me-1"></i> Specialization: {{ doctor.specialization or doctor.department.name }}</p>
+                <p class="text-muted small mb-3"><i class="fa-solid fa-clock-history me-1"></i> Experience: {{ doctor.experience_years }} Years &bull; Fee: ₹{{ "%.2f"|format(doctor.consultation_fee) }}</p>
+                <div class="mt-auto">
+                    <a href="{{ url_for('routes.book_appointment', doctor_id=doctor.id) }}" class="btn btn-gradient-primary water-ripple w-100 fw-semibold rounded-3">
+                        <i class="fa-solid fa-calendar-check me-1"></i> Book Appointment
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

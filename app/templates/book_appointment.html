@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - {{ doctor.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="glass-card p-4 p-md-5 glass-card-hover">
+            <div class="mb-4">
+                <a href="{{ url_for('routes.patient_dashboard') }}" class="text-muted text-decoration-none small">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Patient Portal
+                </a>
+                <h3 class="fw-bold mt-2 mb-1 text-main"><i class="fa-solid fa-calendar-plus text-info me-2"></i>Book Consultation</h3>
+                <p class="text-muted small mb-0">{{ doctor.name }} &bull; {{ doctor.department.name }}</p>
+            </div>
+
+            <div class="bg-body bg-opacity-50 p-3 rounded-3 mb-4 border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small d-block">Specialization</span>
+                    <span class="fw-bold text-info">{{ doctor.specialization or doctor.department.name }}</span>
+                </div>
+                <div>
+                    <span class="text-muted small d-block">Consultation Fee</span>
+                    <span class="badge bg-success bg-opacity-20 text-success border border-success px-3 py-2 fs-6 rounded-pill">
+                        ₹{{ "%.2f"|format(doctor.consultation_fee) }}
+                    </span>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('routes.book_appointment', doctor_id=doctor.id) }}">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Select Appointment Date</label>
+                    <input type="date" name="date" class="form-control bg-body border-secondary border-opacity-25 text-main" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-semibold">Select Time Slot</label>
+                    <select name="time" class="form-select bg-body border-secondary border-opacity-25 text-main">
+                        <option value="09:00" selected>09:00 AM (Morning Slot)</option>
+                        <option value="10:30">10:30 AM (Morning Slot)</option>
+                        <option value="14:00">02:00 PM (Afternoon Slot)</option>
+                        <option value="15:30">03:30 PM (Afternoon Slot)</option>
+                        <option value="17:00">05:00 PM (Evening Slot)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-gradient-primary water-ripple w-100 py-3 fw-bold">
+                    <i class="fa-solid fa-calendar-check me-2"></i> Confirm Appointment Booking
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
