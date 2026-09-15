@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseCare HMS — 3D Healthcare Management Showcase</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-glass: rgba(15, 23, 42, 0.78);
+            --border-glass: rgba(56, 189, 248, 0.18);
+            --accent-primary: #38bdf8;
+            --accent-secondary: #2dd4bf;
+            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #2dd4bf 50%, #818cf8 100%);
+            --text-primary: #f8fafc;
+        }
+
+        [data-bs-theme="light"] {
+            --bg-glass: rgba(255, 255, 255, 0.88);
+            --border-glass: rgba(2, 132, 199, 0.15);
+            --text-primary: #0f172a;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            background: #070d1a;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        [data-bs-theme="light"] body {
+            background: #f0f9ff;
+        }
+
+        #medical-3d-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(56, 189, 248, 0.2);
+        }
+
+        .glass-nav {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .text-gradient {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge-role {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-admin { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-doctor { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-patient { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+        .btn-gradient {
+            background: var(--accent-gradient);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn-gradient:hover {
+            opacity: 0.94;
+            color: #ffffff;
+            transform: scale(1.02);
+        }
+
+        .feature-icon-box {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="medical-3d-canvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg glass-nav sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="#">
+                <div class="feature-icon-box bg-info bg-opacity-20 text-info mb-0" style="width:42px; height:42px; font-size:1.3rem;">
+                    <i class="fa-solid fa-hospital-user"></i>
+                </div>
+                <span class="fw-bold fs-4 text-gradient">PulseCare HMS</span>
+            </a>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <button class="btn btn-outline-info rounded-circle btn-sm p-2 d-flex align-items-center justify-content-center" id="themeToggle" style="width:38px; height:38px;" title="Toggle Theme">
+                    <i class="fa-solid fa-moon text-info" id="themeIcon"></i>
+                </button>
+                <a href="https://github.com/24f3004027/HMS-MAD-Projectv1" target="_blank" class="btn btn-gradient btn-sm rounded-pill px-4">
+                    <i class="fa-brands fa-github me-1"></i> GitHub Repo
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-5 text-center position-relative">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <span class="badge badge-doctor mb-3 px-3 py-2 fs-6 shadow-sm">
+                        <i class="fa-solid fa-heart-pulse me-1"></i> 3D Medical Canvas Engine & Doctor Avatars
+                    </span>
+                    <h1 class="display-4 fw-extrabold mb-4">
+                        PulseCare <span class="text-gradient">Hospital Management System</span>
+                    </h1>
+                    <p class="lead text-secondary mb-5 px-lg-5">
+                        A full-stack healthcare platform engineered with Python, Flask, SQLAlchemy, 3D rotating Medical Plus (+) canvas visual effects, and real-time appointment scheduling.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="#specialists" class="btn btn-gradient btn-lg rounded-pill px-5 shadow-lg">
+                            Meet Our Specialists <i class="fa-solid fa-arrow-down ms-2"></i>
+                        </a>
+                        <a href="https://github.com/24f3004027/HMS-MAD-Projectv1" target="_blank" class="btn btn-outline-info btn-lg rounded-pill px-5">
+                            <i class="fa-solid fa-code me-2"></i> Source Code
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Cards -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3 col-6">
+                    <div class="glass-card p-4 text-center">
+                        <h2 class="display-6 fw-bold text-gradient mb-1">Doctor Photos</h2>
+                        <p class="text-secondary small mb-0 fw-semibold">Profile Avatar Engine</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="glass-card p-4 text-center">
+                        <h2 class="display-6 fw-bold text-gradient mb-1">100%</h2>
+                        <p class="text-secondary small mb-0 fw-semibold">Unit Test Coverage</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="glass-card p-4 text-center">
+                        <h2 class="display-6 fw-bold text-gradient mb-1">3 Roles</h2>
+                        <p class="text-secondary small mb-0 fw-semibold">Admin, Doctor & Patient</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="glass-card p-4 text-center">
+                        <h2 class="display-6 fw-bold text-gradient mb-1">3D Plus</h2>
+                        <p class="text-secondary small mb-0 fw-semibold">Rotating Cross Engine</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Specialist Doctors Section -->
+    <section id="specialists" class="py-5">
+        <div class="container py-3">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold fs-2 mb-3">Our Specialist Doctors</h2>
+                <p class="text-secondary">Board-certified specialist doctors with profile portraits & live availability.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="glass-card p-3 h-100 rounded-4 border border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&auto=format&fit=crop&q=80" alt="Dr. Sarah Jenkins" class="rounded-3 object-fit-cover shadow-sm border border-info border-opacity-30" style="width: 85px; height: 95px;">
+                            <div>
+                                <h5 class="fw-bold mb-1">Dr. Sarah Jenkins</h5>
+                                <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 mb-1">Cardiology</span>
+                                <p class="text-secondary small mb-0"><i class="fa-solid fa-clock text-warning me-1"></i> Availability: 5:00 PM</p>
+                                <p class="text-secondary small mb-0"><i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Fee: ₹800</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="glass-card p-3 h-100 rounded-4 border border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80" alt="Dr. Alex Rivera" class="rounded-3 object-fit-cover shadow-sm border border-info border-opacity-30" style="width: 85px; height: 95px;">
+                            <div>
+                                <h5 class="fw-bold mb-1">Dr. Alex Rivera</h5>
+                                <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 mb-1">Neuro-Oncology</span>
+                                <p class="text-secondary small mb-0"><i class="fa-solid fa-clock text-warning me-1"></i> Availability: 5:00 PM</p>
+                                <p class="text-secondary small mb-0"><i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Fee: ₹900</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mx-auto">
+                    <div class="glass-card p-3 h-100 rounded-4 border border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1594824813566-88855ce78c9c?w=400&auto=format&fit=crop&q=80" alt="Dr. Priya Sharma" class="rounded-3 object-fit-cover shadow-sm border border-info border-opacity-30" style="width: 85px; height: 95px;">
+                            <div>
+                                <h5 class="fw-bold mb-1">Dr. Priya Sharma</h5>
+                                <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 mb-1">Pediatrics</span>
+                                <p class="text-secondary small mb-0"><i class="fa-solid fa-clock text-warning me-1"></i> Availability: 5:00 AM</p>
+                                <p class="text-secondary small mb-0"><i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Fee: ₹600</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 border-top border-secondary border-opacity-25 mt-5">
+        <div class="container text-center text-secondary small">
+            <p class="mb-1">PulseCare HMS — Modernized for IIT Madras BS Degree Projects.</p>
+            <p class="mb-0">MIT License &copy; 2026 PulseCare HMS Team.</p>
+        </div>
+    </footer>
+
+    <!-- 3D Medical Canvas Engine Script -->
+    <script>
+        const canvas = document.getElementById('medical-3d-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let medicalCrosses = [];
+        let mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+        let ekgProgress = 0;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initCrosses();
+        }
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', (e) => {
+            mouse.targetX = (e.clientX - width / 2) * 0.05;
+            mouse.targetY = (e.clientY - height / 2) * 0.05;
+        });
+
+        class MedicalCross3D {
+            constructor() {
+                this.reset();
+                this.z = Math.random() * 800 - 400;
+            }
+
+            reset() {
+                this.x = (Math.random() - 0.5) * width * 1.5;
+                this.y = (Math.random() - 0.5) * height * 1.5;
+                this.z = 600;
+                this.size = Math.random() * 26 + 18;
+                this.thickness = this.size * 0.38;
+
+                this.rotX = Math.random() * Math.PI * 2;
+                this.rotY = Math.random() * Math.PI * 2;
+                this.rotZ = Math.random() * Math.PI * 2;
+
+                this.vRotX = (Math.random() - 0.5) * 0.018;
+                this.vRotY = (Math.random() - 0.5) * 0.022;
+                this.vRotZ = (Math.random() - 0.5) * 0.015;
+
+                this.vz = (Math.random() * 0.6 + 0.3);
+
+                const colors = [
+                    { main: '56, 189, 248', glow: '14, 165, 233' },
+                    { main: '45, 212, 191', glow: '20, 184, 166' },
+                    { main: '52, 211, 153', glow: '16, 185, 129' }
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.rotX += this.vRotX;
+                this.rotY += this.vRotY;
+                this.rotZ += this.vRotZ;
+                this.z -= this.vz;
+                if (this.z < -200) this.reset();
+            }
+
+            draw(theme) {
+                const focalLength = 450;
+                const perspective = focalLength / (focalLength + this.z);
+                if (perspective <= 0) return;
+
+                const projX = (this.x + mouse.x * (this.z / 400)) * perspective + width / 2;
+                const projY = (this.y + mouse.y * (this.z / 400)) * perspective + height / 2;
+                const projSize = this.size * perspective;
+                const projThick = this.thickness * perspective;
+
+                if (projX < -100 || projX > width + 100 || projY < -100 || projY > height + 100) return;
+
+                const alpha = Math.min(1, Math.max(0, (600 - this.z) / 600)) * (theme === 'dark' ? 0.75 : 0.65);
+
+                ctx.save();
+                ctx.translate(projX, projY);
+
+                const cosX = Math.cos(this.rotX);
+                const sinX = Math.sin(this.rotX);
+                const cosY = Math.cos(this.rotY);
+                const sinY = Math.sin(this.rotY);
+
+                ctx.transform(cosY, sinX * sinY, 0, cosX, 0, 0);
+                ctx.rotate(this.rotZ);
+
+                ctx.shadowBlur = 14 * perspective;
+                ctx.shadowColor = `rgba(${this.color.glow}, ${alpha * 0.8})`;
+
+                ctx.fillStyle = theme === 'dark'
+                    ? `rgba(${this.color.main}, ${alpha})`
+                    : `rgba(${this.color.glow}, ${alpha * 0.85})`;
+
+                ctx.beginPath();
+                ctx.roundRect(-projThick / 2, -projSize / 2, projThick, projSize, 4 * perspective);
+                ctx.roundRect(-projSize / 2, -projThick / 2, projSize, projThick, 4 * perspective);
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        function initCrosses() {
+            medicalCrosses = [];
+            const count = Math.floor((width * height) / 26000) + 12;
+            for (let i = 0; i < count; i++) {
+                medicalCrosses.push(new MedicalCross3D());
+            }
+        }
+
+        function drawEKG(theme) {
+            ekgProgress += 2.5;
+            if (ekgProgress > width + 300) ekgProgress = -100;
+
+            const baseY = height * 0.85;
+            const ekgColor = theme === 'dark' ? 'rgba(56, 189, 248, ' : 'rgba(14, 165, 233, ';
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+
+            const pulseWidth = 140;
+            const startX = ekgProgress - pulseWidth;
+
+            const grad = ctx.createLinearGradient(startX, 0, ekgProgress, 0);
+            grad.addColorStop(0, `${ekgColor}0)`);
+            grad.addColorStop(0.7, `${ekgColor}0.25)`);
+            grad.addColorStop(1, `${ekgColor}0.75)`);
+            ctx.strokeStyle = grad;
+
+            ctx.moveTo(Math.max(0, startX), baseY);
+
+            for (let x = Math.max(0, startX); x <= Math.min(width, ekgProgress); x += 5) {
+                let relX = x - (ekgProgress - pulseWidth / 2);
+                let y = baseY;
+
+                if (relX > -40 && relX < -25) {
+                    y -= 8 * Math.sin((relX + 32.5) / 15 * Math.PI);
+                } else if (relX >= -25 && relX < -15) {
+                    y += 12 * Math.sin((relX + 20) / 10 * Math.PI);
+                } else if (relX >= -15 && relX < 10) {
+                    y -= 55 * Math.sin((relX + 2.5) / 25 * Math.PI);
+                } else if (relX >= 10 && relX < 25) {
+                    y += 22 * Math.sin((relX - 17.5) / 15 * Math.PI);
+                } else if (relX >= 25 && relX < 50) {
+                    y -= 14 * Math.sin((relX - 37.5) / 25 * Math.PI);
+                }
+
+                ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            mouse.x += (mouse.targetX - mouse.x) * 0.05;
+            mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+            const theme = document.documentElement.getAttribute('data-bs-theme') || 'dark';
+
+            medicalCrosses.sort((a, b) => b.z - a.z);
+            for (let cross of medicalCrosses) {
+                cross.update();
+                cross.draw(theme);
+            }
+
+            drawEKG(theme);
+            requestAnimationFrame(animate);
+        }
+
+        resize();
+        animate();
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-moon text-info' : 'fa-solid fa-sun text-warning';
+        });
+    </script>
+</body>
+</html>
