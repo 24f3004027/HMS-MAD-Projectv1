@@ -95,7 +95,7 @@ def patient_register():
         db.session.commit()
 
         login_user(patient)
-        flash("Registration successful! Welcome to ParkSmart Healthcare.", "success")
+        flash("Registration successful! Welcome to PulseCare HMS.", "success")
         return redirect(url_for("routes.patient_dashboard"))
 
     return render_template("patient_register.html")
