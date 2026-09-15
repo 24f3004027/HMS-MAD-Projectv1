@@ -1,19 +1,20 @@
-# 🏥 Hospital Management System (HMS v1.0) — Modernized Edition
+# 🏥 PulseCare HMS — 3D Healthcare Management Platform
 
 > **IIT Madras BS Degree — Modernization Milestone Showcase**  
-> *A full-stack, multi-role hospital management web application engineered with Python, Flask, SQLAlchemy, Glassmorphism UI 2.0, and 60fps HTML5 canvas effects.*
+> *A full-stack, multi-role hospital management web application engineered with Python, Flask, SQLAlchemy, Glassmorphism UI 2.0, 3D rotating Medical Plus (`+`) canvas visual effects, and animated heartbeat EKG pulse waves.*
 
 ---
 
 ## 🌐 Live Interactive GitHub Pages Landing Site
-👉 **[HMS GitHub Pages Showcase](https://24f3004027.github.io/HMS-MAD-Projectv1/)**
+👉 **[PulseCare HMS Showcase Site](https://24f3004027.github.io/HMS-MAD-Projectv1/)**
 
 ---
 
 ## ⚡ Key Highlights & Architecture
 
+- **3D Floating Medical Cross Canvas**: HTML5 perspective projection engine rendering floating 3D rotating Medical Plus (`+`) crosses, mouse parallax tilt, and smooth animated EKG heartbeat pulse waves (`canvas-bg.js`).
 - **Multi-Role Portal Access**: Dedicated authorization workflows for **Admins**, **Doctors**, and **Patients**.
-- **Modern Glassmorphism 2.0**: Dark & Light mode switcher with persistent `localStorage`, custom glassmorphism cards, and fluid 60fps particle background canvas (`canvas-bg.js`).
+- **Modern Glassmorphism 2.0**: Dark & Light mode switcher with persistent `localStorage`, custom glassmorphism cards, and medical color accents.
 - **Automated Database Engine**: SQLite with automatic initial data seeding (`perform_seeding()`) and standalone seeder script (`create_db.py`).
 - **Robust Verification**: 100% test pass rate using automated unit test suite (`test_app.py`).
 
