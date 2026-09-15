@@ -67,4 +67,4 @@ python -m unittest test_app.py
 
 ## 📄 License
 
-Distributed under the **MIT License**. See `LICENSE` for details.
+Distributed under the **GNU General Public License v3.0 (GNU GPLv3)**. See `LICENSE` for details.
