@@ -62,7 +62,7 @@
                                     <div class="modal-content glass-card border-secondary text-main">
                                         <div class="modal-header border-secondary border-opacity-25">
                                             <h5 class="modal-title fw-bold"><i class="fa-solid fa-notes-medical text-info me-2"></i>Update Appointment #{{ app.id }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <form method="POST" action="{{ url_for('routes.update_appointment', appointment_id=app.id) }}">
                                             <div class="modal-body">

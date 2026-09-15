@@ -250,7 +250,7 @@
                             <div class="alert alert-{{ category }} alert-dismissible fade show glass-card border-0 mb-4 shadow-sm" role="alert">
                                 <i class="fa-solid {% if category=='success' %}fa-circle-check text-success{% elif category=='danger' %}fa-circle-xmark text-danger{% else %}fa-circle-info text-info{% endif %} me-2 fs-5"></i>
                                 <span>{{ message }}</span>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         {% endfor %}
                     </div>
@@ -298,6 +298,32 @@
             const currentTheme = document.documentElement.getAttribute("data-bs-theme");
             const newTheme = currentTheme === "dark" ? "light" : "dark";
             setTheme(newTheme);
+        });
+
+        // Fail-proof dismissal handler for alerts & modals
+        document.addEventListener("click", function (e) {
+            const dismissAlert = e.target.closest('[data-bs-dismiss="alert"]');
+            if (dismissAlert) {
+                const alertEl = dismissAlert.closest(".alert");
+                if (alertEl) {
+                    alertEl.classList.remove("show");
+                    setTimeout(() => alertEl.remove(), 150);
+                }
+            }
+
+            const dismissModal = e.target.closest('[data-bs-dismiss="modal"]');
+            if (dismissModal) {
+                const modalEl = dismissModal.closest(".modal");
+                if (modalEl) {
+                    modalEl.classList.remove("show");
+                    modalEl.style.display = "none";
+                    document.body.classList.remove("modal-open");
+                    document.body.style.overflow = "";
+                    document.body.style.paddingRight = "";
+                    const backdrop = document.querySelector(".modal-backdrop");
+                    if (backdrop) backdrop.remove();
+                }
+            }
         });
     </script>
     {% block extra_scripts %}{% endblock %}
