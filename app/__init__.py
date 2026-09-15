@@ -73,7 +73,7 @@ def perform_seeding():
     doc2 = Doctor(name="Dr. Alex Rivera", email="alex@hms.org", department_id=deps[1].id, specialization="Neuro-Oncology", experience_years=10, consultation_fee=900.0, profile_image="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80")
     doc2.set_password("doctor123")
 
-    doc3 = Doctor(name="Dr. Priya Sharma", email="priya@hms.org", department_id=deps[2].id, specialization="Pediatric Healthcare", experience_years=8, consultation_fee=600.0, profile_image="https://images.unsplash.com/photo-1594824813566-88855ce78c9c?w=400&auto=format&fit=crop&q=80")
+    doc3 = Doctor(name="Dr. Priya Sharma", email="priya@hms.org", department_id=deps[2].id, specialization="Pediatric Healthcare", experience_years=8, consultation_fee=600.0, profile_image="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&auto=format&fit=crop&q=80")
     doc3.set_password("doctor123")
 
     db.session.add_all([doc1, doc2, doc3])

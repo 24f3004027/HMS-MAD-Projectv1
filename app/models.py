@@ -81,7 +81,7 @@ class Doctor(UserMixin, db.Model):
         default_avatars = [
             "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&auto=format&fit=crop&q=80",
             "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80",
-            "https://images.unsplash.com/photo-1594824813566-88855ce78c9c?w=400&auto=format&fit=crop&q=80"
+            "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&auto=format&fit=crop&q=80"
         ]
         idx = ((self.id or 1) - 1) % len(default_avatars)
         return default_avatars[idx]
