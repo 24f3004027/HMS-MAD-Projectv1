@@ -1,174 +1,69 @@
-📘 Hospital Management System (HMS)
-Modern, Responsive Full-Stack Healthcare Appointment Platform
+# 🏥 Hospital Management System (HMS v1.0) — Modernized Edition
 
-A fully functional hospital management system built with Flask + SQLAlchemy, featuring a complete glassmorphism UI, separate portals for Admin, Doctor, and Patient, and full appointment + availability workflows.
+> **IIT Madras BS Degree — Modernization Milestone Showcase**  
+> *A full-stack, multi-role hospital management web application engineered with Python, Flask, SQLAlchemy, Glassmorphism UI 2.0, and 60fps HTML5 canvas effects.*
 
-This project is designed as a real-world mini HMS for academic or practical use.
+---
 
-🚀 Features
-👤 Patient Portal
+## 🌐 Live Interactive GitHub Pages Landing Site
+👉 **[HMS GitHub Pages Showcase](https://24f3004027.github.io/HMS-MAD-Projectv1/)**
 
-Register, login & manage profile
+---
 
-Search doctors by name/department
+## ⚡ Key Highlights & Architecture
 
-Book appointments with validation
+- **Multi-Role Portal Access**: Dedicated authorization workflows for **Admins**, **Doctors**, and **Patients**.
+- **Modern Glassmorphism 2.0**: Dark & Light mode switcher with persistent `localStorage`, custom glassmorphism cards, and fluid 60fps particle background canvas (`canvas-bg.js`).
+- **Automated Database Engine**: SQLite with automatic initial data seeding (`perform_seeding()`) and standalone seeder script (`create_db.py`).
+- **Robust Verification**: 100% test pass rate using automated unit test suite (`test_app.py`).
 
-Reschedule or cancel appointments
+---
 
-View past & upcoming appointments
+## 🔑 Default Seeded Credentials
 
-Auto-generated treatment history chart
+| Role | Login Identifier | Password | Access Rights |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin` | `admin123` | System setup, Doctor onboarding, Patient status overview |
+| **Doctor** | `sarah@hms.org` | `doctor123` | Patient queue, Diagnosis, Prescriptions, Availability |
+| **Patient** | `ramrup` or `ramrup@hms.org` | `user123` | Doctor search, Appointment booking, Rescheduling |
 
-🩺 Doctor Portal
+---
 
-Login & view dashboard
+## 💻 Quickstart & Local Setup
 
-Set availability for next 7 days
+```bash
+# 1. Clone the repository
+git clone https://github.com/24f3004027/HMS-MAD-Projectv1.git
+cd HMS-MAD-Projectv1
 
-View today's, upcoming & past appointments
-
-Update appointment diagnosis and treatment
-
-Prescription entry
-
-Appointment status analytics chart
-
-🛠 Admin Portal
-
-Secure admin login
-
-Add doctors with department mapping
-
-View/search doctors & patients
-
-Blacklist patient or doctor
-
-View system-wide appointments
-
-View doctor login credentials (email only)
-
-🎨 UI / UX
-
-Built using Bootstrap 5 + custom Glassmorphism CSS, including:
-
-Fully responsive design
-
-Smooth gradients
-
-Blurred card effects
-
-Clean form styling
-
-Unified theme across all portals
-
-🏗 Tech Stack
-Category	Technology
-Backend	Flask, Python, Jinja2
-Database	SQLAlchemy (SQLite / MySQL compatible)
-Frontend	HTML5, Bootstrap 5, Glassmorphism CSS
-Auth	Secure hashed passwords using Werkzeug
-Charts	Chart.js
-
-📂 Project Structure
-
-HMS-MAD-Projectv1/
-│── run.py
-│── requirements.txt
-│── instance/                
-│   └── hms.db
-│── venv/                    
-│── app/
-│   ├── __init__.py
-│   ├── api.py
-│   ├── models.py
-│   ├── routes.py
-│   ├── templates/
-│   │   ├── index.html
-│   │   ├── patient_login.html
-│   │   ├── patient_register.html
-│   │   ├── patient_dashboard.html
-│   │   ├── patient_profile.html
-│   │   ├── patient_book.html
-│   │   ├── patient_reschedule.html
-│   │   ├── doctor_login.html
-│   │   ├── doctor_dashboard.html
-│   │   ├── doctor_appointment_view.html
-│   │   ├── doctor_availability.html
-│   │   ├── admin_login.html
-│   │   ├── admin_dashboard.html
-│   │   ├── add_doctor.html
-│   │   ├── update_doctor.html
-│   │   ├── search_doctors.html
-│   │   ├── search_patients.html
-│   │   ├── view_doctors.html
-│   │   ├── view_appointments.html
-│   │   ├── doctor_credentials.html
-│   └── static/
-│       ├── css/
-│       ├── js/
-│       └── images/
-└── README.md
-
-
-⚙️ Installation & Setup
-1️⃣ Clone the repository
-git clone https://github.com/<your-username>/HMS.git
-cd HMS
-
-2️⃣ Create virtual environment
+# 2. Set up virtual environment
 python3 -m venv venv
-source venv/bin/activate    # Linux / Mac
-venv\Scripts\activate       # Windows
+source venv/bin/activate
 
-3️⃣ Install dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
 
-4️⃣ Initialize the database
-python
->>> from app import db
->>> db.create_all()
->>> exit()
+# 4. Seed database (Optional, auto-seeds on first run)
+python create_db.py
 
-5️⃣ Run the server
-flask run
+# 5. Run application (Port 5002)
+python run.py
+```
 
+Open your browser at `http://localhost:5002`.
 
-Visit: http://127.0.0.1:5000
+---
 
-📸 Screenshots (Add yours)
+## 🧪 Automated Testing
 
-You can add images like:
+Run unit tests cleanly using Python `unittest`:
 
-/screenshots/home.png
-/screenshots/patient_dashboard.png
-/screenshots/doctor_availability.png
-/screenshots/admin_dashboard.png
+```bash
+python -m unittest test_app.py
+```
 
-🔑 Default Credentials (Optional)
-Role	Username	Password
-Admin	admin	admin123 (example)
-🧪 API Endpoints (Short)
-Method	Endpoint	Description
-GET	/api/doctors	List all doctors
-GET	/api/patients	List all patients
-POST	/api/appointments	Create appointment
-PUT	/api/appointments/<id>	Update appointment
-DELETE	/api/appointments/<id>	Delete appointment
+---
 
-Add more as needed.
+## 📄 License
 
-🤝 Contributing
-
-Pull requests are welcome!
-If adding significant changes, create a feature branch:
-
-git checkout -b feature-new-module
-
-📜 License
-
-MIT License – free to use, modify, and distribute.
-
-⭐ Support
-
-If you liked the project, consider giving the repo a star ⭐ on GitHub!
+Distributed under the **MIT License**. See `LICENSE` for details.
