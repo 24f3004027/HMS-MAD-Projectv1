@@ -1,53 +1,79 @@
 {% extends "base.html" %}
 
-{% block title %}PulseCare HMS - Modern Healthcare Management{% endblock %}
+{% block title %}PulseCare HMS - Modern Healthcare Management System{% endblock %}
 
 {% block content %}
-<div class="row align-items-center py-5">
+<div class="row align-items-center py-4 py-lg-5">
+    <!-- Hero Left Column -->
     <div class="col-12 col-lg-7 mb-4 mb-lg-0">
-        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-3 py-2 rounded-pill mb-3">
-            <i class="fa-solid fa-heart-pulse me-1"></i> Full-Stack Healthcare Appointment Platform
-        </span>
-        <h1 class="display-4 fw-extrabold mb-3">
-            Modern Hospital Management <span class="text-info">System</span>
+        <div class="mb-3 d-inline-block">
+            <div class="bg-info rounded-pill mb-2" style="width: 140px; height: 4px; background: linear-gradient(90deg, #38bdf8, #2dd4bf);"></div>
+        </div>
+        
+        <h1 class="display-3 fw-extrabold mb-3 text-main tracking-tight" style="line-height: 1.15;">
+            Modern Hospital <br><span class="text-gradient">Management System</span>
         </h1>
-        <p class="lead text-muted mb-4">
+        
+        <p class="lead text-muted mb-4 pe-lg-4 fs-5" style="line-height: 1.6;">
             Streamlined healthcare workflow connecting patients with specialist doctors, automated appointment scheduling, electronic medical records, and real-time hospital analytics.
         </p>
-        <div class="d-flex flex-wrap gap-3">
-            <a href="{{ url_for('routes.patient_register') }}" class="btn btn-gradient-primary water-ripple btn-lg fw-bold">
-                <i class="fa-solid fa-user-plus me-2"></i> Register as Patient
+
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <a href="{{ url_for('routes.patient_register') }}" class="btn btn-gradient-primary water-ripple btn-lg fw-bold px-4 rounded-pill shadow-lg d-flex align-items-center gap-2">
+                <i class="fa-solid fa-user-plus"></i> Register as Patient
             </a>
-            <a href="{{ url_for('routes.login') }}" class="btn btn-outline-info btn-lg rounded-3 fw-semibold">
-                <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Portal
+            <a href="{{ url_for('routes.login') }}" class="btn btn-outline-info btn-lg rounded-pill px-4 fw-semibold d-flex align-items-center gap-2 border-opacity-50">
+                <i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal
             </a>
         </div>
     </div>
 
+    <!-- Hero Right Column — Portal Access Selector -->
     <div class="col-12 col-lg-5">
-        <div class="glass-card p-4 glass-card-hover border-info border-opacity-25">
-            <h4 class="fw-bold mb-3 text-main"><i class="fa-solid fa-user-shield text-info me-2"></i>Portal Access Selector</h4>
+        <div class="glass-card p-4 rounded-4 shadow-lg border border-info border-opacity-25">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="p-2 rounded-3 bg-info bg-opacity-20 text-info d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-users-gear fs-4"></i>
+                </div>
+                <h4 class="fw-bold mb-0 text-main">Portal Access Selector</h4>
+            </div>
+
             <div class="d-flex flex-column gap-3">
-                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between text-decoration-none">
-                    <div>
-                        <span class="fw-bold text-main d-block"><i class="fa-solid fa-user-gear me-2 text-danger"></i> Administrator</span>
-                        <span class="text-muted small">Manage doctors, departments, and hospital metrics</span>
+                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 glass-card-hover d-flex align-items-center justify-content-between text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-danger bg-opacity-20 text-danger p-2 rounded-2">
+                            <i class="fa-solid fa-user-gear fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="fw-bold text-main d-block">Administrator</span>
+                            <span class="text-muted small">Manage doctors, departments, and hospital metrics</span>
+                        </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-muted"></i>
                 </a>
 
-                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between text-decoration-none">
-                    <div>
-                        <span class="fw-bold text-main d-block"><i class="fa-solid fa-user-doctor me-2 text-info"></i> Specialist Doctor</span>
-                        <span class="text-muted small">Manage schedules, write prescriptions and diagnoses</span>
+                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 glass-card-hover d-flex align-items-center justify-content-between text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-info bg-opacity-20 text-info p-2 rounded-2">
+                            <i class="fa-solid fa-user-doctor fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="fw-bold text-main d-block">Specialist Doctor</span>
+                            <span class="text-muted small">Manage schedules, write prescriptions and diagnoses</span>
+                        </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-muted"></i>
                 </a>
 
-                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 d-flex align-items-center justify-content-between text-decoration-none">
-                    <div>
-                        <span class="fw-bold text-main d-block"><i class="fa-solid fa-heart-circle-check me-2 text-success"></i> Patient</span>
-                        <span class="text-muted small">Book appointments and access medical treatment history</span>
+                <a href="{{ url_for('routes.login') }}" class="btn btn-dark text-start p-3 rounded-3 border border-secondary border-opacity-25 glass-card-hover d-flex align-items-center justify-content-between text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success bg-opacity-20 text-success p-2 rounded-2">
+                            <i class="fa-solid fa-heart-pulse fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="fw-bold text-main d-block">Patient</span>
+                            <span class="text-muted small">Book appointments and access medical treatment history</span>
+                        </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-muted"></i>
                 </a>
@@ -56,26 +82,38 @@
     </div>
 </div>
 
-<!-- Specialists Carousel Preview -->
-<div class="my-5">
-    <h3 class="fw-bold mb-4 text-main"><i class="fa-solid fa-stethoscope text-info me-2"></i>Our Specialist Doctors</h3>
+<!-- Specialist Doctors Showcase Cards -->
+<div class="my-5 pt-3">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h3 class="fw-bold text-main mb-0 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-stethoscope text-info"></i> Our Specialist Doctors
+        </h3>
+        <a href="{{ url_for('routes.search_doctors') }}" class="btn btn-sm btn-outline-info rounded-pill px-3 fw-semibold">
+            View All Specialists <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+
     <div class="row g-4">
         {% for doctor in doctors %}
         <div class="col-12 col-md-6 col-lg-4">
-            <div class="glass-card p-4 h-100 d-flex flex-column glass-card-hover">
+            <div class="glass-card p-3 h-100 d-flex flex-column glass-card-hover rounded-4 border border-secondary border-opacity-25">
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="bg-info bg-opacity-20 text-info p-3 rounded-circle fs-3">
-                        <i class="fa-solid fa-user-doctor"></i>
+                    <div class="position-relative" style="width: 85px; height: 95px; flex-shrink: 0;">
+                        <img src="{{ doctor.avatar_url }}" alt="{{ doctor.name }}" class="w-100 h-100 object-fit-cover rounded-3 shadow-sm border border-info border-opacity-30">
                     </div>
-                    <div>
-                        <h5 class="fw-bold mb-0 text-main">{{ doctor.name }}</h5>
-                        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25">{{ doctor.department.name }}</span>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <h5 class="fw-bold mb-1 text-main text-truncate">{{ doctor.name }}</h5>
+                        <div class="mb-1">
+                            <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 small fw-semibold">
+                                <i class="fa-solid fa-circle-dot me-1 fs-7"></i> {{ doctor.specialization or doctor.department.name }}
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-0"><i class="fa-solid fa-clock text-warning me-1"></i> Availability: 5:00 PM</p>
+                        <p class="text-muted small mb-0"><i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Fee: ₹{{ "%.0f"|format(doctor.consultation_fee) }}</p>
                     </div>
                 </div>
-                <p class="text-muted small mb-2"><i class="fa-solid fa-award text-warning me-1"></i> Specialization: {{ doctor.specialization or doctor.department.name }}</p>
-                <p class="text-muted small mb-3"><i class="fa-solid fa-clock-history me-1"></i> Experience: {{ doctor.experience_years }} Years &bull; Fee: ₹{{ "%.2f"|format(doctor.consultation_fee) }}</p>
-                <div class="mt-auto">
-                    <a href="{{ url_for('routes.book_appointment', doctor_id=doctor.id) }}" class="btn btn-gradient-primary water-ripple w-100 fw-semibold rounded-3">
+                <div class="mt-auto pt-2">
+                    <a href="{{ url_for('routes.book_appointment', doctor_id=doctor.id) }}" class="btn btn-gradient-primary water-ripple w-100 fw-semibold rounded-3 btn-sm py-2">
                         <i class="fa-solid fa-calendar-check me-1"></i> Book Appointment
                     </a>
                 </div>

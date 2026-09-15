@@ -55,6 +55,7 @@ class Doctor(UserMixin, db.Model):
     specialization = db.Column(db.String(100), nullable=True)
     experience_years = db.Column(db.Integer, default=5)
     consultation_fee = db.Column(db.Float, default=500.0)
+    profile_image = db.Column(db.String(500), nullable=True)
     is_active = db.Column(db.Boolean, default=True)
 
     appointments = db.relationship("Appointment", backref="doctor", lazy=True)
@@ -72,6 +73,18 @@ class Doctor(UserMixin, db.Model):
     @property
     def display_name(self):
         return self.name
+
+    @property
+    def avatar_url(self):
+        if self.profile_image:
+            return self.profile_image
+        default_avatars = [
+            "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1594824813566-88855ce78c9c?w=400&auto=format&fit=crop&q=80"
+        ]
+        idx = ((self.id or 1) - 1) % len(default_avatars)
+        return default_avatars[idx]
 
 # -----------------------------------------------------------------------------
 # 4. Patient Model

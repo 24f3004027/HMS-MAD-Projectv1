@@ -25,21 +25,24 @@
     {% if doctors %}
         {% for doc in doctors %}
         <div class="col-12 col-md-6 col-lg-4">
-            <div class="glass-card p-4 h-100 d-flex flex-column glass-card-hover">
+            <div class="glass-card p-3 h-100 d-flex flex-column glass-card-hover rounded-4 border border-secondary border-opacity-25">
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="bg-info bg-opacity-20 text-info p-3 rounded-circle fs-3">
-                        <i class="fa-solid fa-user-doctor"></i>
+                    <div class="position-relative" style="width: 85px; height: 95px; flex-shrink: 0;">
+                        <img src="{{ doc.avatar_url }}" alt="{{ doc.name }}" class="w-100 h-100 object-fit-cover rounded-3 shadow-sm border border-info border-opacity-30">
                     </div>
-                    <div>
-                        <h5 class="fw-bold mb-0 text-main">{{ doc.name }}</h5>
-                        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25">{{ doc.department.name }}</span>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <h5 class="fw-bold mb-1 text-main text-truncate">{{ doc.name }}</h5>
+                        <div class="mb-1">
+                            <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 small fw-semibold">
+                                <i class="fa-solid fa-circle-dot me-1 fs-7"></i> {{ doc.department.name }}
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-0"><i class="fa-solid fa-award text-warning me-1"></i> {{ doc.specialization or doc.department.name }}</p>
+                        <p class="text-muted small mb-0"><i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Fee: ₹{{ "%.0f"|format(doc.consultation_fee) }}</p>
                     </div>
                 </div>
-                <p class="text-muted small mb-2"><i class="fa-solid fa-award text-warning me-1"></i> Specialization: {{ doc.specialization or 'General Practitioner' }}</p>
-                <p class="text-muted small mb-3"><i class="fa-solid fa-clock-history me-1"></i> Experience: {{ doc.experience_years }} Years &bull; Fee: ₹{{ "%.2f"|format(doc.consultation_fee) }}</p>
-                
                 <div class="mt-auto pt-2">
-                    <a href="{{ url_for('routes.book_appointment', doctor_id=doc.id) }}" class="btn btn-gradient-primary water-ripple w-100 fw-semibold rounded-3">
+                    <a href="{{ url_for('routes.book_appointment', doctor_id=doc.id) }}" class="btn btn-gradient-primary water-ripple w-100 fw-semibold rounded-3 btn-sm py-2">
                         <i class="fa-solid fa-calendar-check me-1"></i> Book Consultation
                     </a>
                 </div>

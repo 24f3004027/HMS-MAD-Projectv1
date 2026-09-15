@@ -146,7 +146,12 @@
             <tbody>
                 {% for doc in doctors %}
                 <tr class="border-secondary border-opacity-10">
-                    <td class="fw-bold text-main"><i class="fa-solid fa-user-doctor text-info me-2"></i>{{ doc.name }}</td>
+                    <td class="fw-bold text-main">
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="{{ doc.avatar_url }}" alt="{{ doc.name }}" class="rounded-circle object-fit-cover shadow-sm border border-info border-opacity-30" style="width: 38px; height: 38px;">
+                            <span>{{ doc.name }}</span>
+                        </div>
+                    </td>
                     <td><span class="badge bg-info bg-opacity-20 text-info">{{ doc.department.name }}</span></td>
                     <td class="text-muted small">{{ doc.specialization or 'General Care' }}</td>
                     <td class="text-muted small">{{ doc.experience_years }} Years</td>
